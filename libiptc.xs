@@ -9,6 +9,10 @@
 
 #include "const-c.inc"
 
+#define ERROR_SV perl_get_sv("!", 0)
+#define SET_ERRSTR(format...) sv_setpvf(ERROR_SV, ##format)
+#define SET_ERRNUM(value) sv_setiv(ERROR_SV, (IV)value)
+
 typedef iptc_handle_t* IPTables__libiptc;
 
 MODULE = IPTables::libiptc		PACKAGE = IPTables::libiptc
@@ -32,8 +36,15 @@ init(tablename)
     iptc_handle_t handle;
   CODE:
     handle  = iptc_init(tablename);
-    RETVAL  = malloc(sizeof(iptc_handle_t));
-    *RETVAL = handle;
+    if (handle == NULL) {
+	RETVAL  = NULL;
+	SET_ERRNUM(errno);
+	SET_ERRSTR("%s", iptc_strerror(errno));
+	SvIOK_on(ERROR_SV);
+    } else {
+	RETVAL  = malloc(sizeof(iptc_handle_t));
+	*RETVAL = handle;
+    }
   OUTPUT:
     RETVAL
 
@@ -47,3 +58,4 @@ DESTROY(self)
 	if(*self) iptc_free(self);
 	free(self);
     }
+
