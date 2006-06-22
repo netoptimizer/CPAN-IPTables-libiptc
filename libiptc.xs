@@ -9,21 +9,23 @@
 
 #include "const-c.inc"
 
+typedef iptc_handle_t* IPTables__libiptc;
+
 MODULE = IPTables::libiptc		PACKAGE = IPTables::libiptc
 
 INCLUDE: const-xs.inc
 
 int
-is_chain(chain, handle)
-    iptc_handle_t* handle
+is_chain(self, chain)
+    IPTables::libiptc self
     char * chain
   CODE:
-    RETVAL = iptc_is_chain(chain, *handle);
+    RETVAL = iptc_is_chain(chain, *self);
   OUTPUT:
     RETVAL
 
 
-iptc_handle_t*
+IPTables::libiptc
 init(tablename)
     char * tablename
   PREINIT:
