@@ -50,6 +50,20 @@ init(tablename)
 
 
 int
+commit(self)
+    IPTables::libiptc self
+  CODE:
+    RETVAL = iptc_commit(self);
+    if(!RETVAL) {
+	SET_ERRNUM(errno);
+	SET_ERRSTR("%s", iptc_strerror(errno));
+	SvIOK_on(ERROR_SV);
+    }
+  OUTPUT:
+    RETVAL
+
+
+int
 create_chain(self, chain)
     IPTables::libiptc self
     char * chain
