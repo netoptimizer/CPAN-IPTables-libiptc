@@ -10,7 +10,8 @@ WriteMakefile(
       (ABSTRACT_FROM  => 'lib/IPTables/libiptc.pm', # retrieve abstract from module
        AUTHOR         => 'Jesper Dangaard Brouer <jdb@comx.dk>') : ()),
     LIBS              => ['-liptc'], # e.g., '-lm'
-#    LDDLFLAGS         => '-shared -L/usr/local/stow/lib',
+    LDDLFLAGS         => '-shared -L/usr/local/stow/lib',
+    LDFLAGS           => '-L/usr/local/stow/lib',
     DEFINE            => '', # e.g., '-DHAVE_SOMETHING'
     INC               => '-I. -I/usr/local/stow/include',
                          # e.g., '-I. -I/usr/include/other'
