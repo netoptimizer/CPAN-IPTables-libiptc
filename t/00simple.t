@@ -8,7 +8,7 @@ my $testiter = 1;
 # TEST: init
 my $table = IPTables::libiptc::init('filter');
 unless ($table) {
-        print "not ok 1\n";
+        print "#$!\nnot ok $testiter\n";
         exit(1);
 }
 #print "ok\n";
