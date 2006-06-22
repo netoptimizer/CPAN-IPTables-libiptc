@@ -24,7 +24,7 @@ INCLUDE: const-xs.inc
 int
 is_chain(self, chain)
     IPTables::libiptc self
-    char * chain
+    ipt_chainlabel    chain
   CODE:
     if   (*self == NULL) croak(ERRSTR_NULL_HANDLE);
     else RETVAL = iptc_is_chain(chain, *self);
@@ -73,7 +73,7 @@ commit(self)
 int
 create_chain(self, chain)
     IPTables::libiptc self
-    char * chain
+    ipt_chainlabel    chain
   CODE:
     if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
     else {
@@ -90,7 +90,7 @@ create_chain(self, chain)
 int
 delete_chain(self, chain)
     IPTables::libiptc self
-    char * chain
+    ipt_chainlabel    chain
   CODE:
     if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
     else {
