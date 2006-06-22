@@ -65,7 +65,7 @@ __END__
 
 =head1 NAME
 
-IPTables::libiptc - Perl extension for blah blah blah
+IPTables::libiptc - Perl extension for iptables libiptc
 
 =head1 SYNOPSIS
 
@@ -103,7 +103,7 @@ If you have a web site set up for your module, mention it here.
 
 =head1 AUTHOR
 
-Jesper Dangaard Brouer, E<lt>jdb@slackware.lanE<gt>
+Jesper Dangaard Brouer, E<lt>jdb@comx.dkE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
