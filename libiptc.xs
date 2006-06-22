@@ -87,6 +87,7 @@ create_chain(self, chain)
   OUTPUT:
     RETVAL
 
+
 int
 delete_chain(self, chain)
     IPTables::libiptc self
@@ -95,6 +96,25 @@ delete_chain(self, chain)
     if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
     else {
 	RETVAL = iptc_delete_chain(chain, self);
+	if (!RETVAL) {
+	    SET_ERRNUM(errno);
+	    SET_ERRSTR("%s", iptc_strerror(errno));
+	    SvIOK_on(ERROR_SV);
+	}
+    }
+  OUTPUT:
+    RETVAL
+
+
+int
+rename_chain(self, old_name, new_name)
+    IPTables::libiptc self
+    ipt_chainlabel    old_name
+    ipt_chainlabel    new_name
+  CODE:
+    if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
+    else {
+	RETVAL = iptc_rename_chain(old_name, new_name, self);
 	if (!RETVAL) {
 	    SET_ERRNUM(errno);
 	    SET_ERRSTR("%s", iptc_strerror(errno));
