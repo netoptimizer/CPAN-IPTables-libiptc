@@ -4,10 +4,10 @@
 
 #include "ppport.h"
 
-#include <include/libiptc/libiptc.h>
+#include <libiptc/libiptc.h>
 
 #include "const-c.inc"
 
-MODULE = IPTables::libiptc		PACKAGE = IPTables::libiptc		
+MODULE = IPTables::libiptc		PACKAGE = IPTables::libiptc
 
 INCLUDE: const-xs.inc

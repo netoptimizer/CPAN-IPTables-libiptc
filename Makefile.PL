@@ -9,11 +9,14 @@ WriteMakefile(
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/IPTables/libiptc.pm', # retrieve abstract from module
        AUTHOR         => 'Jesper Dangaard Brouer <jdb@comx.dk>') : ()),
-    LIBS              => [''], # e.g., '-lm'
+    LIBS              => ['-liptc'], # e.g., '-lm'
+#    LDDLFLAGS         => '-shared -L/usr/local/stow/lib',
     DEFINE            => '', # e.g., '-DHAVE_SOMETHING'
-    INC               => '-I.', # e.g., '-I. -I/usr/include/other'
+    INC               => '-I. -I/usr/local/stow/include',
+                         # e.g., '-I. -I/usr/include/other'
 	# Un-comment this if you add C files to link with later:
     # OBJECT            => '$(O_FILES)', # link all the C files too
+    PREFIX            => '/usr/local/stow',
 );
 if  (eval {require ExtUtils::Constant; 1}) {
   # If you edit these definitions to change the constants used by this module,
