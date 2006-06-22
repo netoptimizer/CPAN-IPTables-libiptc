@@ -13,6 +13,8 @@
 #define SET_ERRSTR(format...) sv_setpvf(ERROR_SV, ##format)
 #define SET_ERRNUM(value) sv_setiv(ERROR_SV, (IV)value)
 
+#define ERRSTR_NULL_HANDLE "IPTables handle does NOT exist, forgot to call init?"
+
 typedef iptc_handle_t* IPTables__libiptc;
 
 MODULE = IPTables::libiptc		PACKAGE = IPTables::libiptc
@@ -53,11 +55,22 @@ int
 commit(self)
     IPTables::libiptc self
   CODE:
-    RETVAL = iptc_commit(self);
-    if(!RETVAL) {
+    if (*self) {
+	RETVAL = iptc_commit(self);
+	if(!RETVAL) {
+	    SET_ERRNUM(errno);
+	    SET_ERRSTR("%s", iptc_strerror(errno));
+	    SvIOK_on(ERROR_SV);
+	}
+	*self = NULL;
+    } else {
+	RETVAL = 0;
+	errno = EFAULT;
 	SET_ERRNUM(errno);
-	SET_ERRSTR("%s", iptc_strerror(errno));
+	SET_ERRSTR(ERRSTR_NULL_HANDLE);
 	SvIOK_on(ERROR_SV);
+	/* croak(ERRSTR_NULL_HANDLE); */
+	croak("Error: Could not commit because handle == NULL.");
     }
   OUTPUT:
     RETVAL
@@ -68,10 +81,18 @@ create_chain(self, chain)
     IPTables::libiptc self
     char * chain
   CODE:
-    RETVAL = iptc_create_chain(chain, self);
-    if (!RETVAL) {
+    if (*self) {
+	RETVAL = iptc_create_chain(chain, self);
+	if (!RETVAL) {
+	    SET_ERRNUM(errno);
+	    SET_ERRSTR("%s", iptc_strerror(errno));
+	    SvIOK_on(ERROR_SV);
+	}
+    } else {
+	RETVAL = 0;
+	errno = EFAULT;
 	SET_ERRNUM(errno);
-	SET_ERRSTR("%s", iptc_strerror(errno));
+	SET_ERRSTR(ERRSTR_NULL_HANDLE);
 	SvIOK_on(ERROR_SV);
     }
   OUTPUT:
