@@ -49,6 +49,20 @@ init(tablename)
     RETVAL
 
 
+int
+create_chain(self, chain)
+    IPTables::libiptc self
+    char * chain
+  CODE:
+    RETVAL = iptc_create_chain(chain, self);
+    if (!RETVAL) {
+	SET_ERRNUM(errno);
+	SET_ERRSTR("%s", iptc_strerror(errno));
+	SvIOK_on(ERROR_SV);
+    }
+  OUTPUT:
+    RETVAL
+
 
 void
 DESTROY(self)
@@ -58,4 +72,3 @@ DESTROY(self)
 	if(*self) iptc_free(self);
 	free(self);
     }
-

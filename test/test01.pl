@@ -24,11 +24,11 @@ print "after init. Table \"$table\"\n";
 my $success;
 
 my $chainname = "test";
-#if( $success = $table->create_chain("$chainname")) {
-#    print "Create chain: $chainname\n";
-#} else {
-#    print "Could NOT create chain: $chainname\n";
-#}
+if( $success = $table->create_chain("$chainname")) {
+    print "Create chain: $chainname\n";
+} else {
+    print "Could NOT create chain: $chainname\n";
+}
 
 #$chainname = "aaaaa";
 if( $table->is_chain("$chainname")) {
