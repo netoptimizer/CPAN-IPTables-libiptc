@@ -1,0 +1,6 @@
+Revision history for Perl extension IPTables::libiptc.
+
+0.01  Thu Jun 22 14:01:55 2006
+	- original version; created by h2xs 1.23 with options
+		-n IPTables::libiptc include/libiptc/libiptc.h
+
