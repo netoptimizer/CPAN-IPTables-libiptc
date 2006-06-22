@@ -1,3 +1,2 @@
 TYPEMAP
-iptc_handle_t*     T_PTROBJ
 IPTables::libiptc  T_PTROBJ

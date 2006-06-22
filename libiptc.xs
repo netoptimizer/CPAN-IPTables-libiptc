@@ -31,8 +31,19 @@ init(tablename)
   PREINIT:
     iptc_handle_t handle;
   CODE:
-    handle = iptc_init(tablename);
-    RETVAL = malloc(sizeof(iptc_handle_t));
+    handle  = iptc_init(tablename);
+    RETVAL  = malloc(sizeof(iptc_handle_t));
     *RETVAL = handle;
   OUTPUT:
     RETVAL
+
+
+
+void
+DESTROY(self)
+    IPTables::libiptc &self
+  CODE:
+    if(self) {
+	if(*self) iptc_free(self);
+	free(self);
+    }
