@@ -21,16 +21,6 @@ MODULE = IPTables::libiptc		PACKAGE = IPTables::libiptc
 
 INCLUDE: const-xs.inc
 
-int
-is_chain(self, chain)
-    IPTables::libiptc self
-    ipt_chainlabel    chain
-  CODE:
-    if   (*self == NULL) croak(ERRSTR_NULL_HANDLE);
-    else RETVAL = iptc_is_chain(chain, *self);
-  OUTPUT:
-    RETVAL
-
 
 IPTables::libiptc
 init(tablename)
@@ -66,6 +56,21 @@ commit(self)
 	}
 	*self = NULL;
     }
+  OUTPUT:
+    RETVAL
+
+
+##########################################
+#  Chain operations
+##########################################
+
+int
+is_chain(self, chain)
+    IPTables::libiptc self
+    ipt_chainlabel    chain
+  CODE:
+    if   (*self == NULL) croak(ERRSTR_NULL_HANDLE);
+    else RETVAL = iptc_is_chain(chain, *self);
   OUTPUT:
     RETVAL
 
@@ -123,6 +128,48 @@ rename_chain(self, old_name, new_name)
     }
   OUTPUT:
     RETVAL
+
+
+##########################################
+# Rules/Entries affecting a full chain
+##########################################
+
+int
+flush_entries(self, chain)
+    IPTables::libiptc self
+    ipt_chainlabel    chain
+  CODE:
+    if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
+    else {
+	RETVAL = iptc_flush_entries(chain, self);
+	if (!RETVAL) {
+	    SET_ERRNUM(errno);
+	    SET_ERRSTR("%s", iptc_strerror(errno));
+	    SvIOK_on(ERROR_SV);
+	}
+    }
+  OUTPUT:
+    RETVAL
+
+
+int
+zero_entries(self, chain)
+    IPTables::libiptc self
+    ipt_chainlabel    chain
+  CODE:
+    if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
+    else {
+	RETVAL = iptc_zero_entries(chain, self);
+	if (!RETVAL) {
+	    SET_ERRNUM(errno);
+	    SET_ERRSTR("%s", iptc_strerror(errno));
+	    SvIOK_on(ERROR_SV);
+	}
+    }
+  OUTPUT:
+    RETVAL
+
+
 
 
 void
