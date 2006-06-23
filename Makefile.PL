@@ -1,5 +1,18 @@
 use 5.008004;
 use ExtUtils::MakeMaker;
+
+{
+        package MY;
+
+        sub postamble {
+"
+iptables/iptables.o: iptables/*.c
+	make -C iptables/ all
+";
+        }
+}
+
+
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
 WriteMakefile(
@@ -17,6 +30,7 @@ WriteMakefile(
                          # e.g., '-I. -I/usr/include/other'
 	# Un-comment this if you add C files to link with later:
     # OBJECT            => '$(O_FILES)', # link all the C files too
+    OBJECT            => '$(O_FILES) iptables/iptables.o', # link all the C files too
     PREFIX            => '/usr/local/stow',
     TYPEMAPS          => ['libiptc.typemap']
 );
