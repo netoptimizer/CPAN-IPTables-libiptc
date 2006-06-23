@@ -137,7 +137,7 @@ builtin(self, chain)
   CODE:
     if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
     else {
-	RETVAL = iptc_builtin(chain, self);
+	RETVAL = iptc_builtin(chain, *self);
 	if (!RETVAL) {
 	    SET_ERRNUM(errno);
 	    SET_ERRSTR("%s", iptc_strerror(errno));
@@ -188,6 +188,43 @@ zero_entries(self, chain)
     RETVAL
 
 
+##########################################
+# Policy related
+##########################################
+
+void
+get_policy(self, chain)
+    IPTables::libiptc self
+    ipt_chainlabel    chain
+  PREINIT:
+    struct ipt_counters  counter;
+    SV *                 sv;
+    char *               target;
+    char *               temp;
+  PPCODE:
+    sv = ST(0);
+    if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
+    else {
+	if((target = (char *)iptc_get_policy(chain, &counter, self))) {
+	    XPUSHs(sv_2mortal(newSVpv(target, 0)));
+	    asprintf(&temp, "%llu", counter.pcnt);
+	    XPUSHs(sv_2mortal(newSVpv(temp, 0)));
+	    free(temp);
+	    asprintf(&temp, "%llu", counter.bcnt);
+	    XPUSHs(sv_2mortal(newSVpv(temp, 0)));
+	    free(temp);
+	} else {
+	    SET_ERRNUM(errno);
+	    SET_ERRSTR("%s", iptc_strerror(errno));
+	    SvIOK_on(ERROR_SV);
+	}
+    }
+
+
+
+##########################################
+# Stuff...
+##########################################
 
 void
 DESTROY(self)
