@@ -221,6 +221,34 @@ get_policy(self, chain)
     }
 
 
+int
+set_policy(self, chain, policy, pkt_cnt=0, byte_cnt=0)
+    IPTables::libiptc self
+    ipt_chainlabel    chain
+    ipt_chainlabel    policy
+    unsigned int      pkt_cnt
+    unsigned int      byte_cnt
+  PREINIT:
+    struct ipt_counters *  counters = NULL;
+  CODE:
+    if(pkt_cnt && byte_cnt) {
+	counters = malloc(sizeof(struct ipt_counters));
+	counters->pcnt = pkt_cnt;
+	counters->bcnt = byte_cnt;
+    }
+    if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
+    else {
+	RETVAL = iptc_set_policy(chain, policy, counters, self);
+	if (!RETVAL) {
+	    SET_ERRNUM(errno);
+	    SET_ERRSTR("%s", iptc_strerror(errno));
+	    SvIOK_on(ERROR_SV);
+	}
+    }
+    if(counters) free(counters);
+  OUTPUT:
+    RETVAL
+
 
 ##########################################
 # Stuff...
