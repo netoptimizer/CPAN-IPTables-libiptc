@@ -197,20 +197,20 @@ get_policy(self, chain)
     IPTables::libiptc self
     ipt_chainlabel    chain
   PREINIT:
-    struct ipt_counters  counter;
+    struct ipt_counters  counters;
     SV *                 sv;
-    char *               target;
+    char *               policy;
     char *               temp;
   PPCODE:
     sv = ST(0);
     if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
     else {
-	if((target = (char *)iptc_get_policy(chain, &counter, self))) {
-	    XPUSHs(sv_2mortal(newSVpv(target, 0)));
-	    asprintf(&temp, "%llu", counter.pcnt);
+	if((policy = (char *)iptc_get_policy(chain, &counters, self))) {
+	    XPUSHs(sv_2mortal(newSVpv(policy, 0)));
+	    asprintf(&temp, "%llu", counters.pcnt);
 	    XPUSHs(sv_2mortal(newSVpv(temp, 0)));
 	    free(temp);
-	    asprintf(&temp, "%llu", counter.bcnt);
+	    asprintf(&temp, "%llu", counters.bcnt);
 	    XPUSHs(sv_2mortal(newSVpv(temp, 0)));
 	    free(temp);
 	} else {
@@ -221,7 +221,7 @@ get_policy(self, chain)
     }
 
 
-int
+void
 set_policy(self, chain, policy, pkt_cnt=0, byte_cnt=0)
     IPTables::libiptc self
     ipt_chainlabel    chain
@@ -230,24 +230,36 @@ set_policy(self, chain, policy, pkt_cnt=0, byte_cnt=0)
     unsigned int      byte_cnt
   PREINIT:
     struct ipt_counters *  counters = NULL;
-  CODE:
+    struct ipt_counters    old_counters;
+    char *                 old_policy;
+    char *                 temp;
+    int retval;
+  PPCODE:
     if(pkt_cnt && byte_cnt) {
 	counters = malloc(sizeof(struct ipt_counters));
 	counters->pcnt = pkt_cnt;
 	counters->bcnt = byte_cnt;
     }
+    /* Read the old policy and counters and return them to perl */
+    if((old_policy = (char *)iptc_get_policy(chain, &old_counters, self))){
+	XPUSHs(sv_2mortal(newSVpv(old_policy, 0)));
+	asprintf(&temp, "%llu", old_counters.pcnt);
+	XPUSHs(sv_2mortal(newSVpv(temp, 0)));
+	free(temp);
+	asprintf(&temp, "%llu", old_counters.bcnt);
+	XPUSHs(sv_2mortal(newSVpv(temp, 0)));
+	free(temp);
+    }
     if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
     else {
-	RETVAL = iptc_set_policy(chain, policy, counters, self);
-	if (!RETVAL) {
+	retval = iptc_set_policy(chain, policy, counters, self);
+	if (!retval) {
 	    SET_ERRNUM(errno);
 	    SET_ERRSTR("%s", iptc_strerror(errno));
 	    SvIOK_on(ERROR_SV);
 	}
     }
     if(counters) free(counters);
-  OUTPUT:
-    RETVAL
 
 
 ##########################################
