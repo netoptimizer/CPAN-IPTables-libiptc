@@ -8,6 +8,9 @@ use ExtUtils::MakeMaker;
 "
 iptables/iptables.o: iptables/*.c
 	make -C iptables/ all
+
+clean::
+	make -C iptables/ clean
 ";
         }
 }

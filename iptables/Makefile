@@ -9,7 +9,10 @@ endif
 IPTABLES_VERSION:=1.3.5
 OLD_IPTABLES_VERSION:=1.3.4
 
+ifndef PREFIX
 PREFIX:=/usr/local/stow
+endif
+
 LIBDIR:=$(PREFIX)/lib
 INCDIR:=$(PREFIX)/include
 
@@ -28,3 +31,6 @@ all: iptables.o
 
 iptables.o: iptables.c
         $(CC) $(CFLAGS) -DIPT_LIB_DIR=\"$(IPT_LIBDIR)\" -c -o $@ $<
+
+clean:
+	rm *.o *~
