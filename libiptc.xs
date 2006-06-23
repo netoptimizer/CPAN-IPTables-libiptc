@@ -272,6 +272,25 @@ set_policy(self, chain, policy, pkt_cnt=0, byte_cnt=0)
 # Stuff...
 ##########################################
 
+
+int
+get_references(self, chain)
+    IPTables::libiptc self
+    ipt_chainlabel    chain
+  CODE:
+    if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
+    else {
+	if (!iptc_get_references(&RETVAL, chain, self)) {
+	    RETVAL  = -1;
+	    SET_ERRNUM(errno);
+	    SET_ERRSTR("%s", iptc_strerror(errno));
+	    SvIOK_on(ERROR_SV);
+	}
+    }
+  OUTPUT:
+    RETVAL
+
+
 void
 DESTROY(self)
     IPTables::libiptc &self
