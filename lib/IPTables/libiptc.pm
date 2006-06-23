@@ -80,6 +80,24 @@ unedited.
 
 Blah blah blah.
 
+
+=head1 METHODS
+
+=head2 Chain Operations
+
+=over
+
+=item $success = $table-E<gt>set_policy('chainname', 'target')
+
+=item $success = $table-E<gt>set_policy('chainname', 'target', 'pkt_cnt', 'byte_cnt')
+
+=item ($success, $old_policy, $old_pkt_cnt, $old_pkt_cnt) = 
+      $table-E<gt>set_policy('chainname', 'target')
+
+Sets the default policy.  C<set_policy> can be called severaly ways.
+Upon success full setting of the policy the old policy and counters
+are returned.  The counter setting values are optional.
+
 =head2 EXPORT
 
 None by default.
