@@ -130,6 +130,24 @@ rename_chain(self, old_name, new_name)
     RETVAL
 
 
+int
+builtin(self, chain)
+    IPTables::libiptc self
+    ipt_chainlabel    chain
+  CODE:
+    if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
+    else {
+	RETVAL = iptc_builtin(chain, self);
+	if (!RETVAL) {
+	    SET_ERRNUM(errno);
+	    SET_ERRSTR("%s", iptc_strerror(errno));
+	    SvIOK_on(ERROR_SV);
+	}
+    }
+  OUTPUT:
+    RETVAL
+
+
 ##########################################
 # Rules/Entries affecting a full chain
 ##########################################
@@ -168,7 +186,6 @@ zero_entries(self, chain)
     }
   OUTPUT:
     RETVAL
-
 
 
 
