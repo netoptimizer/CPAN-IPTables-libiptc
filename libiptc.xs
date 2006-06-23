@@ -287,6 +287,77 @@ set_policy(self, chain, policy, pkt_cnt=0, byte_cnt=0)
 
 
 ##########################################
+# iptable.{h,c,o} related
+##########################################
+
+# !!!FUNCTION NOT TESTED!!!
+int
+iptables_delete_chain(self, chain)
+    IPTables::libiptc self
+    ipt_chainlabel    chain
+  CODE:
+    if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
+    else {
+	RETVAL = delete_chain(chain, 0, self);
+	if (!RETVAL) {
+	    SET_ERRNUM(errno);
+	    SET_ERRSTR("%s", iptc_strerror(errno));
+	    SvIOK_on(ERROR_SV);
+	}
+    }
+  OUTPUT:
+    RETVAL
+
+
+# int do_command(int argc, char *argv[], char **table,
+#                iptc_handle_t *handle);
+#
+# !!!FUNCTION NOT TESTED!!!
+#
+# !!!FUNCTION DOES NOT WORK!!!
+#
+int
+iptables_do_command(self, table, argv)
+    IPTables::libiptc self
+    ipt_chainlabel    table
+    SV  * argv;
+  INIT:
+    static char * array[255];
+    int argc; /* number of args*/
+    int n;
+/*
+    if ((!SvROK(argv))
+	|| (SvTYPE(SvRV(argv)) != SVt_PVAV)
+	|| ((argc = av_len((AV *)SvRV(argv))) < 0))
+    {
+	XSRETURN_UNDEF;
+    }
+*/
+    argc = av_len((AV *)SvRV(argv));
+  CODE:
+    for (n = 0; n <= argc; n++) {
+	STRLEN l;
+	char* str = SvPV(*av_fetch((AV *)SvRV(argv), n, 0), l);
+	array[n] = str;
+	printf("loop:%d str:%s\n", n, str);
+    }
+    #printf("array:%s \n", array[0]);
+
+    if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
+    else {
+	/* RETVAL = do_command(argc, argv, *table, self); */
+	RETVAL = do_command(argc, array, "filter", self);
+	if (!RETVAL) {
+	    SET_ERRNUM(errno);
+	    SET_ERRSTR("%s", iptc_strerror(errno));
+	    SvIOK_on(ERROR_SV);
+	}
+    }
+  OUTPUT:
+    RETVAL
+
+
+##########################################
 # Stuff...
 ##########################################
 
