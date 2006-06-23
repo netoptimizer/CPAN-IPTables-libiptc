@@ -235,28 +235,34 @@ set_policy(self, chain, policy, pkt_cnt=0, byte_cnt=0)
     char *                 temp;
     int retval;
   PPCODE:
-    if(pkt_cnt && byte_cnt) {
-	counters = malloc(sizeof(struct ipt_counters));
-	counters->pcnt = pkt_cnt;
-	counters->bcnt = byte_cnt;
-    }
-    /* Read the old policy and counters and return them to perl */
-    if((old_policy = (char *)iptc_get_policy(chain, &old_counters, self))){
-	XPUSHs(sv_2mortal(newSVpv(old_policy, 0)));
-	asprintf(&temp, "%llu", old_counters.pcnt);
-	XPUSHs(sv_2mortal(newSVpv(temp, 0)));
-	free(temp);
-	asprintf(&temp, "%llu", old_counters.bcnt);
-	XPUSHs(sv_2mortal(newSVpv(temp, 0)));
-	free(temp);
-    }
     if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
     else {
+	if(pkt_cnt && byte_cnt) {
+	    counters = malloc(sizeof(struct ipt_counters));
+	    counters->pcnt = pkt_cnt;
+	    counters->bcnt = byte_cnt;
+	}
+	/* Read the old policy and counters */
+	old_policy = (char *)iptc_get_policy(chain, &old_counters, self);
+
 	retval = iptc_set_policy(chain, policy, counters, self);
+	/* Return retval to perl */
+	XPUSHs(sv_2mortal(newSViv(retval)));
 	if (!retval) {
 	    SET_ERRNUM(errno);
 	    SET_ERRSTR("%s", iptc_strerror(errno));
 	    SvIOK_on(ERROR_SV);
+	} else {
+	    /* return old policy and counters to perl */
+      	    if (old_policy) {
+		XPUSHs(sv_2mortal(newSVpv(old_policy, 0)));
+		asprintf(&temp, "%llu", old_counters.pcnt);
+		XPUSHs(sv_2mortal(newSVpv(temp, 0)));
+		free(temp);
+		asprintf(&temp, "%llu", old_counters.bcnt);
+		XPUSHs(sv_2mortal(newSVpv(temp, 0)));
+		free(temp);
+	    }
 	}
     }
     if(counters) free(counters);
