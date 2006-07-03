@@ -15,6 +15,9 @@
 
 #define ERRSTR_NULL_HANDLE "ERROR: IPTables handle==NULL, forgot to call init?"
 
+extern const char *program_name, *program_version;
+extern char *lib_dir;
+
 typedef iptc_handle_t* IPTables__libiptc;
 
 MODULE = IPTables::libiptc		PACKAGE = IPTables::libiptc
@@ -323,10 +326,11 @@ iptables_do_command(self, table, argv)
     SV  * argv;
   INIT:
     static char * array[255];
+    static char * the_table[1];
     int argc; /* number of args*/
     int n;
 /*
-    if ((!SvROK(argv))
+    if ((!SvROK(argv)) 
 	|| (SvTYPE(SvRV(argv)) != SVt_PVAV)
 	|| ((argc = av_len((AV *)SvRV(argv))) < 0))
     {
@@ -335,6 +339,15 @@ iptables_do_command(self, table, argv)
 */
     argc = av_len((AV *)SvRV(argv));
   CODE:
+    program_name = "perl-to-libiptc";
+    program_version = IPTABLES_VERSION;
+
+    the_table[0] = "filter";
+
+    lib_dir = getenv("IPTABLES_LIB_DIR");
+    if (!lib_dir)
+        lib_dir = IPT_LIB_DIR;
+
     for (n = 0; n <= argc; n++) {
 	STRLEN l;
 	char* str = SvPV(*av_fetch((AV *)SvRV(argv), n, 0), l);
@@ -346,7 +359,8 @@ iptables_do_command(self, table, argv)
     if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
     else {
 	/* RETVAL = do_command(argc, argv, *table, self); */
-	RETVAL = do_command(argc, array, "filter", self);
+	/* RETVAL = do_command(n, array, "filter", self); */
+	RETVAL = do_command(n, array, the_table, self);
 	if (!RETVAL) {
 	    SET_ERRNUM(errno);
 	    SET_ERRSTR("%s", iptc_strerror(errno));
