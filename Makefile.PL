@@ -6,14 +6,7 @@ use ExtUtils::MakeMaker;
 
 	sub post_initialize {
 "
-IPTABLES_VERSION:=1.3.5
-OLD_IPTABLES_VERSION:=1.3.4
-
-LIBDIR:=\$(PREFIX)/lib
-
-ifndef IPT_LIBDIR
-IPT_LIBDIR:=\$(LIBDIR)/iptables
-endif
+IPTABLES_VERSION:=1.3.4
 "
         }
 
@@ -41,7 +34,7 @@ WriteMakefile(
     LIBS              => ['-liptc -ldl -lnsl'], # e.g., '-lm'
     LDDLFLAGS         => '-shared -L/usr/local/stow/lib',
     LDFLAGS           => '-L/usr/local/stow/lib',
-    DEFINE            => '-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DIPT_LIB_DIR=\"$(IPT_LIBDIR)\"',
+    DEFINE            => '-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DIPT_LIB_DIR=\"$(PREFIX)/lib/iptables\"',
                          # e.g., '-DHAVE_SOMETHING'
     INC               => '-I. -I/usr/local/stow/include',
                          # e.g., '-I. -I/usr/include/other'
