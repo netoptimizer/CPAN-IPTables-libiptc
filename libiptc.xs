@@ -326,18 +326,19 @@ iptables_do_command(self, table, array_ref)
   INIT:
     static char * argv[255];
     static char * the_table[1];
-    int argc;  /* number of args*/
-    int array_len; /* number of array elements*/
+    int argc;      /* number of args */
+    int array_len; /* number of array elements */
     int n;
-/*
-    if ((!SvROK(array_ref)) 
+
+    # Perl type checking
+    if ((!SvROK(array_ref))
 	|| (SvTYPE(SvRV(array_ref)) != SVt_PVAV)
 	|| ((array_len = av_len((AV *)SvRV(array_ref))) < 0))
     {
 	XSRETURN_UNDEF;
     }
-*/
-    array_len = av_len((AV *)SvRV(array_ref));
+    #array_len = av_len((AV *)SvRV(array_ref));
+
   CODE:
     program_name = "perl-to-libiptc";
     program_version = IPTABLES_VERSION;
