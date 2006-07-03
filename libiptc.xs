@@ -315,29 +315,29 @@ iptables_delete_chain(self, chain)
 # int do_command(int argc, char *argv[], char **table,
 #                iptc_handle_t *handle);
 #
-# !!!FUNCTION NOT TESTED!!!
+# !!!FUNCTION NOT fully TESTED!!!
 #
-# !!!FUNCTION DOES NOT WORK!!!
 #
 int
-iptables_do_command(self, table, argv)
+iptables_do_command(self, table, array_ref)
     IPTables::libiptc self
     ipt_chainlabel    table
-    SV  * argv;
+    SV  * array_ref;
   INIT:
-    static char * array[255];
+    static char * argv[255];
     static char * the_table[1];
-    int argc; /* number of args*/
+    int argc;  /* number of args*/
+    int array_len; /* number of array elements*/
     int n;
 /*
-    if ((!SvROK(argv)) 
-	|| (SvTYPE(SvRV(argv)) != SVt_PVAV)
-	|| ((argc = av_len((AV *)SvRV(argv))) < 0))
+    if ((!SvROK(array_ref)) 
+	|| (SvTYPE(SvRV(array_ref)) != SVt_PVAV)
+	|| ((array_len = av_len((AV *)SvRV(array_ref))) < 0))
     {
 	XSRETURN_UNDEF;
     }
 */
-    argc = av_len((AV *)SvRV(argv));
+    array_len = av_len((AV *)SvRV(array_ref));
   CODE:
     program_name = "perl-to-libiptc";
     program_version = IPTABLES_VERSION;
@@ -348,19 +348,26 @@ iptables_do_command(self, table, argv)
     if (!lib_dir)
         lib_dir = IPT_LIB_DIR;
 
-    for (n = 0; n <= argc; n++) {
+
+    /* Due to getopt parsing in iptables.c
+     * argv needs to contain the program name as the first arg */
+    argv[0] = program_name;
+    argc=1;
+
+    for (n = 0; n <= array_len; n++, argc++) {
 	STRLEN l;
-	char* str = SvPV(*av_fetch((AV *)SvRV(argv), n, 0), l);
-	array[n] = str;
-	printf("loop:%d str:%s\n", n, str);
+	char* str = SvPV(*av_fetch((AV *)SvRV(array_ref), n, 0), l);
+	argv[argc] = str;
+	# printf("loop:%d str:%s   \targv[%d]=%s\n", n, str, argc, argv[argc]);
     }
-    #printf("array:%s \n", array[0]);
+    # printf("value of n:%d array_len:%d argc:%d\n", n, array_len, argc);
 
     if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
     else {
-	/* RETVAL = do_command(argc, argv, *table, self); */
-	/* RETVAL = do_command(n, array, "filter", self); */
-	RETVAL = do_command(n, array, the_table, self);
+	/* RETVAL = do_command(array_len, array_ref, *table, self); */
+	/* RETVAL = do_command(n, argv, "filter", self); */
+	RETVAL = do_command(argc, argv, &the_table, self);
+//	RETVAL = do_command(argc, argv, NULL, self);
 	if (!RETVAL) {
 	    SET_ERRNUM(errno);
 	    SET_ERRSTR("%s", iptc_strerror(errno));
