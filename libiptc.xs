@@ -319,13 +319,12 @@ iptables_delete_chain(self, chain)
 #
 #
 int
-iptables_do_command(self, table, array_ref)
+iptables_do_command(self, array_ref)
     IPTables::libiptc self
-    ipt_chainlabel    table
     SV  * array_ref;
   INIT:
     static char * argv[255];
-    static char * the_table[1];
+    static char * fake_table[0];
     int argc;      /* number of args */
     int array_len; /* number of array elements */
     int n;
@@ -342,8 +341,6 @@ iptables_do_command(self, table, array_ref)
   CODE:
     program_name = "perl-to-libiptc";
     program_version = IPTABLES_VERSION;
-
-    the_table[0] = "filter";
 
     lib_dir = getenv("IPTABLES_LIB_DIR");
     if (!lib_dir)
@@ -365,13 +362,20 @@ iptables_do_command(self, table, array_ref)
 
     if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
     else {
-	/* RETVAL = do_command(array_len, array_ref, *table, self); */
-	/* RETVAL = do_command(n, argv, "filter", self); */
-	RETVAL = do_command(argc, argv, &the_table, self);
-//	RETVAL = do_command(argc, argv, NULL, self);
+	/* The pointer variable fake_table is needed, because iptables.c
+	 * will update it if the "-t" argument is specified.  And infact
+	 * its not used if the handle is defined (which is checked above).
+	 */
+	RETVAL = do_command(argc, argv, &fake_table, self);
 	if (!RETVAL) {
 	    SET_ERRNUM(errno);
 	    SET_ERRSTR("%s", iptc_strerror(errno));
+	    SvIOK_on(ERROR_SV);
+	}
+	if ( fake_table[0] ) {
+	    warn("do_command: Specifying table (%s) has no effect as handle is defined.", fake_table[0]);
+	    SET_ERRNUM(ENOTSUP);
+	    SET_ERRSTR("Specifying table has no effect (%s).", iptc_strerror(errno));
 	    SvIOK_on(ERROR_SV);
 	}
     }
