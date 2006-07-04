@@ -6,8 +6,9 @@ ifndef KERNEL_DIR
 KERNEL_DIR=/usr/src/linux
 endif
 
-IPTABLES_VERSION:=1.3.5
-OLD_IPTABLES_VERSION:=1.3.4
+ifndef IPTABLES_VERSION
+IPTABLES_VERSION:=1.3.4
+endif
 
 ifndef PREFIX
 PREFIX:=/usr/local/stow
@@ -20,17 +21,27 @@ ifndef IPT_LIBDIR
 IPT_LIBDIR:=$(LIBDIR)/iptables
 endif
 
+ifndef LDFLAGS
+LDFLAGS = -L$(LIBDIR)
+endif
+LDFLAGS+=-rdynamic
+
+LDLIBS=-liptc -ldl -lnsl
 
 COPT_FLAGS:=-O2
-CFLAGS:=$(COPT_FLAGS) -Wall -Wunused -I$(KERNEL_DIR)/include -I$(INCDIR) -I../include/ -DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\"
+CFLAGS:=$(COPT_FLAGS) -Wall -Wunused -I$(KERNEL_DIR)/include -I$(INCDIR) -I../include/
 #-g -DDEBUG #-pg # -DIPTC_DEBUG
 
+DEFINES:=-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DIPT_LIB_DIR=\"$(IPT_LIBDIR)\"
 default: all
 
-all: iptables.o
+all: iptables.o iptables-standalone
 
-iptables.o: iptables.c
-        $(CC) $(CFLAGS) -DIPT_LIB_DIR=\"$(IPT_LIBDIR)\" -c -o $@ $<
+iptables.o: iptables.c Makefile
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+iptables-standalone: iptables-standalone.c iptables.o
+	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 clean:
-	rm *.o *~
+	rm iptables-standalone *.o *~
