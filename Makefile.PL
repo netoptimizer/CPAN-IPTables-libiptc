@@ -13,7 +13,7 @@ IPTABLES_VERSION:=1.3.4
         sub postamble {
 "
 iptables/iptables.o: iptables/*.c
-	make -C iptables/ all -DPREFIX=\"\$(PREFIX)\" -DIPTABLES_VERSION=\"\$(IPTABLES_VERSION)\" -DIPT_LIB_DIR=\"\$(PREFIX)/lib/iptables\
+	make -C iptables/ all PREFIX=\"\$(PREFIX)\" IPTABLES_VERSION=\"\$(IPTABLES_VERSION)\" IPT_LIB_DIR=\"\$(PREFIX)/lib/iptables\"
 
 clean::
 	make -C iptables/ clean
