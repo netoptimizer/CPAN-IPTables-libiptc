@@ -87,15 +87,29 @@ IPTables::libiptc - Perl extension for iptables libiptc
 =head1 SYNOPSIS
 
   use IPTables::libiptc;
-  blah blah blah
+
+  $table = IPTables::libiptc::init('filter');
+
 
 =head1 DESCRIPTION
 
-Stub documentation for IPTables::libiptc, created by h2xs. It looks like the
-author of the extension was negligent enough to leave the stub
-unedited.
+This package provides a perl interface to the netfilter/iptables
+C-code and library C<libiptc>.
 
-Blah blah blah.
+This package is written from scratch, but is inspired by the CPAN
+module IPTables-IPv4.  The CPAN module IPTables-IPv4 could not be used
+because it has not been keept up-to-date, with the newest iptables
+extentions.  This is a result of the module design, as it contains
+every extention and thus needs to port them individually.
+
+This package has another approach, it links with the systems libiptc.a
+library and depend on dynamic loading of iptables extensions available
+on the system.
+
+The module only exports the libiptc chain manipulation functions.  All
+rule manipulations are done through the iptables.c C<do_command>
+function.  As iptables.c is not made as a library, the package
+unfortunally needs to maintain/contain this C file.
 
 
 =head1 METHODS
@@ -115,7 +129,19 @@ Sets the default policy.  C<set_policy> can be called severaly ways.
 Upon success full setting of the policy the old policy and counters
 are returned.  The counter setting values are optional.
 
-=head2 EXPORT
+=back
+
+=head2 Iptables commands (from iptables.h)
+
+=over
+
+=item  $table-E<gt>iptables_do_command(\@array_ref)
+
+Example of an array which contains a command:
+ my @array = ("-I", "test", "-s", "4.3.2.1", "-j", "ACCEPT");
+ $table-E<gt>iptables_do_command(\@array);
+
+=head1 EXPORT
 
 None by default.
 
