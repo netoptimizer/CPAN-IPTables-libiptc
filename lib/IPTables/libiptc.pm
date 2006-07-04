@@ -6,9 +6,24 @@ use warnings;
 use Carp;
 
 require Exporter;
+require DynaLoader;
+
+# Our libiptc.so is loaded dynamically, and other dynamic libraries
+# need some of the external symbols defined in the library.  Thus,
+# when loading the library the RTLD_GLOBAL flag needs to be set, as it
+# will make symbol resolution available of subsequently loaded
+# libraries.
+#
+# This solves the error:
+#  Couldn't load target `standard':
+#   libipt_standard.so: undefined symbol: register_target
+#
+# This flag 0x01 equals RTLD_GLOBAL.
+sub dl_load_flags {0x01}
+
 use AutoLoader;
 
-our @ISA = qw(Exporter);
+our @ISA = qw(Exporter DynaLoader);
 
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
@@ -54,6 +69,8 @@ sub AUTOLOAD {
 
 require XSLoader;
 XSLoader::load('IPTables::libiptc', $VERSION);
+
+#bootstrap IPTables::libiptc $VERSION;
 
 # Preloaded methods go here.
 
