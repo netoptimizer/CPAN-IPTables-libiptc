@@ -235,6 +235,33 @@ list_chains(self)
     }
 
 
+void
+list_rules_dst_IPs(self, chain)
+    IPTables::libiptc self
+    ipt_chainlabel    chain
+  PREINIT:
+    SV *   sv;
+    int    count = 0;
+    struct ipt_entry *entry;
+  PPCODE:
+    sv = ST(0);
+    if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
+    else {
+	if(iptc_is_chain(chain, *self)) {
+	    entry = (struct ipt_entry *)iptc_first_rule(chain, self);
+	    while(entry) {
+		count++;
+ 		if (GIMME_V == G_ARRAY) {
+		    sv = newSVpv((char *)addr_to_dotted(&(entry->ip.dst)),0);
+		    XPUSHs(sv_2mortal(sv));
+		}
+		entry = (struct ipt_entry *)iptc_next_rule(entry, self);
+	    }
+	}
+	if (GIMME_V == G_SCALAR)
+	    XPUSHs(sv_2mortal(newSViv(count)));
+    }
+
 ##########################################
 # Policy related
 ##########################################
