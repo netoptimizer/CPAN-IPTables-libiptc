@@ -5,6 +5,7 @@
 #include "ppport.h"
 
 #include <libiptc/libiptc.h>
+#include <string.h>
 #include <errno.h>
 
 #include "const-c.inc"
@@ -236,30 +237,55 @@ list_chains(self)
 
 
 void
-list_rules_dst_IPs(self, chain)
+list_rules_IPs(self, chain, type)
     IPTables::libiptc self
     ipt_chainlabel    chain
+    char *            type
   PREINIT:
     SV *   sv;
     int    count = 0;
     struct ipt_entry *entry;
+    int    the_type;
+    static char * errmsg = "Wrong listing type requested.";
   PPCODE:
     sv = ST(0);
     if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
     else {
 	if(iptc_is_chain(chain, *self)) {
 	    entry = (struct ipt_entry *)iptc_first_rule(chain, self);
+
+	    /* Parse that type was requested */
+	    if (strcasecmp(type, "dst") == 0) {
+		the_type = 'd';
+	    }
+	    else if (strcasecmp(type, "src") == 0) {
+		the_type = 's';
+	    }
+	    else {
+		croak(errmsg);
+	    }
+
 	    while(entry) {
 		count++;
  		if (GIMME_V == G_ARRAY) {
-		    sv = newSVpv((char *)addr_to_dotted(&(entry->ip.dst)),0);
+
+		    switch (the_type) {
+		    case 'd':
+			sv = newSVpv((char *)addr_to_dotted(&(entry->ip.dst)),0);
+		        break;
+		    case 's':
+			sv = newSVpv((char *)addr_to_dotted(&(entry->ip.src)),0);
+		        break;
+		    default:
+		        croak(errmsg);
+		    }
 		    XPUSHs(sv_2mortal(sv));
 		}
 		entry = (struct ipt_entry *)iptc_next_rule(entry, self);
 	    }
+	    if (GIMME_V == G_SCALAR)
+		XPUSHs(sv_2mortal(newSViv(count)));
 	}
-	if (GIMME_V == G_SCALAR)
-	    XPUSHs(sv_2mortal(newSViv(count)));
     }
 
 ##########################################
