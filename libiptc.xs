@@ -6,6 +6,7 @@
 
 #include <libiptc/libiptc.h>
 #include <string.h>
+#include <stdio.h>
 #include <errno.h>
 
 #include "const-c.inc"
@@ -246,6 +247,7 @@ list_rules_IPs(self, chain, type)
     int    count = 0;
     struct ipt_entry *entry;
     int    the_type;
+    char   buf[255];
     static char * errmsg = "Wrong listing type requested.";
   PPCODE:
     sv = ST(0);
@@ -271,10 +273,14 @@ list_rules_IPs(self, chain, type)
 
 		    switch (the_type) {
 		    case 'd':
-			sv = newSVpv((char *)addr_to_dotted(&(entry->ip.dst)),0);
+			sprintf(buf,"%s",(char*)addr_to_dotted(&(entry->ip.dst)));
+			strcat(buf, (char*) mask_to_dotted(&(entry->ip.dmsk)));
+			sv = newSVpv(buf, 0);
 		        break;
 		    case 's':
-			sv = newSVpv((char *)addr_to_dotted(&(entry->ip.src)),0);
+			sprintf(buf,"%s",(char*)addr_to_dotted(&(entry->ip.src)));
+			strcat(buf, (char*) mask_to_dotted(&(entry->ip.smsk)));
+			sv = newSVpv(buf, 0);
 		        break;
 		    default:
 		        croak(errmsg);
