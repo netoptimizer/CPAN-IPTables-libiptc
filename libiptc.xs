@@ -247,7 +247,7 @@ list_rules_IPs(self, type, chain)
     int    count = 0;
     struct ipt_entry *entry;
     int    the_type;
-    char   buf[255];
+    char   buf[100]; /* I should be enough with only 32 chars */
     static char * errmsg = "Wrong listing type requested.";
   PPCODE:
     sv = ST(0);
@@ -256,16 +256,10 @@ list_rules_IPs(self, type, chain)
 	if(iptc_is_chain(chain, *self)) {
 	    entry = (struct ipt_entry *)iptc_first_rule(chain, self);
 
-	    /* Parse that type was requested */
-	    if (strcasecmp(type, "dst") == 0) {
-		the_type = 'd';
-	    }
-	    else if (strcasecmp(type, "src") == 0) {
-		the_type = 's';
-	    }
-	    else {
-		croak(errmsg);
-	    }
+	    /* Parse what type was requested */
+	    if      (strcasecmp(type, "dst") == 0) the_type = 'd';
+	    else if (strcasecmp(type, "src") == 0) the_type = 's';
+	    else croak(errmsg);
 
 	    while(entry) {
 		count++;
@@ -294,8 +288,8 @@ list_rules_IPs(self, type, chain)
 	} else {
 	    XSRETURN_UNDEF;
 	}
-
     }
+
 
 ##########################################
 # Policy related
