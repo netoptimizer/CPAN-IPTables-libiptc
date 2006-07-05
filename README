@@ -18,7 +18,7 @@ To install this module type the following:
 
    perl Makefile.PL PREFIX=/usr/local/stow/
    make
-   make test
+   sudo make test
    make install PREFIX=/usr/local/stow/stow/IPTables-libiptc-0.02
 
 DEPENDENCIES
