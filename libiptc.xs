@@ -208,6 +208,32 @@ zero_entries(self, chain)
   OUTPUT:
     RETVAL
 
+##########################################
+# Listing related
+##########################################
+
+void
+list_chains(self)
+    IPTables::libiptc self
+  PREINIT:
+    char * chain;
+    SV *   sv;
+    int    count = 0;
+  PPCODE:
+    sv = ST(0);
+    if (*self == NULL) croak(ERRSTR_NULL_HANDLE);
+    else {
+	chain = (char *)iptc_first_chain(self);
+	while(chain) {
+	    count++;
+	    if (GIMME_V == G_ARRAY)
+		XPUSHs(sv_2mortal(newSVpv(chain, 0)));
+	    chain = (char *)iptc_next_chain(self);
+	}
+	if (GIMME_V == G_SCALAR)
+	    XPUSHs(sv_2mortal(newSViv(count)));
+    }
+
 
 ##########################################
 # Policy related
@@ -314,9 +340,6 @@ iptables_delete_chain(self, chain)
 
 # int do_command(int argc, char *argv[], char **table,
 #                iptc_handle_t *handle);
-#
-# !!!FUNCTION NOT fully TESTED!!!
-#
 #
 int
 iptables_do_command(self, array_ref)

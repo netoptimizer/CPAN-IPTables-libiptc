@@ -181,9 +181,14 @@ Jesper Dangaard Brouer, E<lt>hawk@comx.dkE<gt> or E<lt>hawk@diku.dkE<gt>.
 
 =head2 Authors SVN version information
 
+=over
+
 $LastChangedDate$
+
 $Revision$
+
 $LastChangedBy$
+
 
 =head1 COPYRIGHT AND LICENSE
 
