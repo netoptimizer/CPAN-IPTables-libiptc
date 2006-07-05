@@ -131,6 +131,17 @@ are returned.  The counter setting values are optional.
 
 =back
 
+
+=head2 Rules Operations
+
+=over
+
+No rules functions is mapped/export from libiptc, instead the iptables
+C<do_command> function is exported to this purpose.
+
+=back
+
+
 =head2 Iptables commands (from iptables.h)
 
 =over
@@ -138,8 +149,10 @@ are returned.  The counter setting values are optional.
 =item  $table-E<gt>iptables_do_command(\@array_ref)
 
 Example of an array which contains a command:
- my @array = ("-I", "test", "-s", "4.3.2.1", "-j", "ACCEPT");
- $table-E<gt>iptables_do_command(\@array);
+  my @array = ("-I", "test", "-s", "4.3.2.1", "-j", "ACCEPT");
+  $table-E<gt>iptables_do_command(\@array);
+
+=back
 
 =head1 EXPORT
 
@@ -164,7 +177,13 @@ If you have a web site set up for your module, mention it here.
 
 =head1 AUTHOR
 
-Jesper Dangaard Brouer, E<lt>jdb@comx.dkE<gt>
+Jesper Dangaard Brouer, E<lt>hawk@comx.dkE<gt> or E<lt>hawk@diku.dkE<gt>.
+
+=head2 Authors SVN version information
+
+$LastChangedDate$
+$Revision$
+$LastChangedBy$
 
 =head1 COPYRIGHT AND LICENSE
 
