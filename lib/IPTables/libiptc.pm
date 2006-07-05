@@ -138,12 +138,11 @@ the behavior/purpose of this perl module.
 
 =over
 
-=item $success = $table-E<gt>set_policy('chainname', 'target')
+=item B<set_policy>
 
-=item $success = $table-E<gt>set_policy('chainname', 'target', 'pkt_cnt', 'byte_cnt')
-
-=item ($success, $old_policy, $old_pkt_cnt, $old_pkt_cnt) =
-      $table-E<gt>set_policy('chainname', 'target')
+    $success = $table->set_policy('chainname', 'target');
+    $success = $table->set_policy('chainname', 'target', 'pkt_cnt', 'byte_cnt');
+    ($success, $old_policy, $old_pkt_cnt, $old_pkt_cnt) = $table->set_policy('chainname', 'target');
 
 Sets the default policy.  C<set_policy> can be called severaly ways.
 Upon success full setting of the policy the old policy and counters
@@ -156,17 +155,37 @@ No rules manipulation functions is mapped/export from libiptc, instead
 the iptables C<do_command> function is exported to this purpose.
 
 
+=head2 Listing Operations
+
+=item B<list_chains>
+
+    @array            = $table->list_chains();
+    $number_of_chains = $table->list_chains();
+
+Lists all chains.  Returns the number of chains in SCALAR context.
+
+=item B<list_rules_IPs>
+
+    @array           = $table->list_rules_IPs('type', 'chainname');
+    $number_of_rules = $table->list_rules_IPs('type', 'chainname');
+
+This function lists the (rules) source or destination IPs from a given
+chain.  The C<type> is either C<src> or C<dst> for source and
+destination IPs.  The netmask is also listed together with the IPs,
+but seperated by a C</> character.  If chainname does not exist
+C<undef> is returned.
+
 =head2 Iptables commands (from iptables.h)
 
-=over
+=item B<iptables_do_command>
 
-=item  $table-E<gt>iptables_do_command(\@array_ref)
+    $table->iptables_do_command(\@array_ref)
 
 Example of an array which contains a command:
-  my @array = ("-I", "test", "-s", "4.3.2.1", "-j", "ACCEPT");
-  $table-E<gt>iptables_do_command(\@array);
 
-=back
+    my @array = ("-I", "test", "-s", "4.3.2.1", "-j", "ACCEPT");
+    $table->iptables_do_command(\@array);
+
 
 =head1 EXPORT
 
@@ -195,13 +214,9 @@ Jesper Dangaard Brouer, E<lt>hawk@comx.dkE<gt> or E<lt>hawk@diku.dkE<gt>.
 
 =head2 Authors SVN version information
 
-=over
-
-$LastChangedDate$
-
-$Revision$
-
-$LastChangedBy$
+ $LastChangedDate$
+ $Revision$
+ $LastChangedBy$
 
 
 =head1 COPYRIGHT AND LICENSE
