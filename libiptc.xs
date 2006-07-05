@@ -238,7 +238,7 @@ list_chains(self)
 
 
 void
-list_rules_IPs(self, chain, type)
+list_rules_IPs(self, type, chain)
     IPTables::libiptc self
     ipt_chainlabel    chain
     char *            type
@@ -291,7 +291,10 @@ list_rules_IPs(self, chain, type)
 	    }
 	    if (GIMME_V == G_SCALAR)
 		XPUSHs(sv_2mortal(newSViv(count)));
+	} else {
+	    XSRETURN_UNDEF;
 	}
+
     }
 
 ##########################################
