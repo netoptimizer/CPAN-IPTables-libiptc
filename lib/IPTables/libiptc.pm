@@ -90,6 +90,10 @@ IPTables::libiptc - Perl extension for iptables libiptc
 
   $table = IPTables::libiptc::init('filter');
 
+  $table->create_chain("badehat");
+
+  # Its important to commit/push-back the changes to the kernel
+  $table->commit();
 
 =head1 DESCRIPTION
 
@@ -111,6 +115,22 @@ rule manipulations are done through the iptables.c C<do_command>
 function.  As iptables.c is not made as a library, the package
 unfortunally needs to maintain/contain this C file.
 
+=head2 Iptables kernel to userspace design
+
+=over
+
+The reasoning behind making this module comes from how
+iptables/libiptc communicate with the kernel.  Iptables/libiptc
+transfers the entire ruleset from kernel to userspace, and back again
+after making some changes to the ruleset.
+
+This is a fairly large operation if only changing a single rule.  That
+is actually the behavior of the iptables command.
+
+Thus, with this knowledge it make sense to make several changes before
+commit'ing the changes (entire ruleset) back to the kernel.  This is
+the behavior/purpose of this perl module.
+
 
 =head1 METHODS
 
@@ -122,24 +142,18 @@ unfortunally needs to maintain/contain this C file.
 
 =item $success = $table-E<gt>set_policy('chainname', 'target', 'pkt_cnt', 'byte_cnt')
 
-=item ($success, $old_policy, $old_pkt_cnt, $old_pkt_cnt) = 
+=item ($success, $old_policy, $old_pkt_cnt, $old_pkt_cnt) =
       $table-E<gt>set_policy('chainname', 'target')
 
 Sets the default policy.  C<set_policy> can be called severaly ways.
 Upon success full setting of the policy the old policy and counters
 are returned.  The counter setting values are optional.
 
-=back
-
 
 =head2 Rules Operations
 
-=over
-
-No rules functions is mapped/export from libiptc, instead the iptables
-C<do_command> function is exported to this purpose.
-
-=back
+No rules manipulation functions is mapped/export from libiptc, instead
+the iptables C<do_command> function is exported to this purpose.
 
 
 =head2 Iptables commands (from iptables.h)
