@@ -42,6 +42,7 @@ init(tablename)
     } else {
 	RETVAL  = malloc(sizeof(iptc_handle_t));
 	*RETVAL = handle;
+	# TODO: Lock /var/lock/iptables_tablename
     }
   OUTPUT:
     RETVAL
@@ -60,9 +61,21 @@ commit(self)
 	    SvIOK_on(ERROR_SV);
 	}
 	*self = NULL;
+	# TODO: UnLock /var/lock/iptables_tablename
     }
   OUTPUT:
     RETVAL
+
+
+void
+DESTROY(self)
+    IPTables::libiptc &self
+  CODE:
+    if(self) {
+	if(*self) iptc_free(self);
+	free(self);
+    }
+    # TODO: UnLock /var/lock/iptables_tablename
 
 
 ##########################################
@@ -372,7 +385,7 @@ set_policy(self, chain, policy, pkt_cnt=0, byte_cnt=0)
 
 
 ##########################################
-# iptable.{h,c,o} related
+# iptables.{h,c,o} related
 ##########################################
 
 # !!!FUNCTION NOT TESTED!!!
@@ -466,12 +479,3 @@ iptables_do_command(self, array_ref)
 # Stuff...
 ##########################################
 
-
-void
-DESTROY(self)
-    IPTables::libiptc &self
-  CODE:
-    if(self) {
-	if(*self) iptc_free(self);
-	free(self);
-    }
