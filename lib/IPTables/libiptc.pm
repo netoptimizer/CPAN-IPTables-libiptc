@@ -138,6 +138,18 @@ the behavior/purpose of this perl module.
 
 =over
 
+=item B<get_policy>
+
+    my ($policy)                      = $table->get_policy('chainname');
+    my ($policy, $pkt_cnt, $byte_cnt) = $table->get_policy('chainname');
+
+This returns an array containing the default policy, and the number of
+packets and bytes which have reached the default policy, in the chain
+C<chainname>.  If C<chainname> does not exist, or if it is not a
+built-in chain, an empty array will be returned, and $! will be set to
+a string containing the reason.
+
+
 =item B<set_policy>
 
     $success = $table->set_policy('chainname', 'target');
