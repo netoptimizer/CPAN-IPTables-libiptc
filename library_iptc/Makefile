@@ -1,7 +1,13 @@
-CFLAGS := -I../include -I/usr/src/linux/include -DIPTABLES_VERSION=\"1.3.4\" -O2 -Wall
+CFLAGS := -I../include -I/usr/src/linux/include -O2 -Wall
 CC := gcc
 AR := ar
 RM := rm
+
+ifndef IPTABLES_VERSION
+IPTABLES_VERSION:=1.3.4
+endif
+
+DEFINES:=-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\"
 
 default: all
 
@@ -15,7 +21,7 @@ libip4tc.o: libiptc.c
 libip6tc.o: libiptc.c
 
 %.o: %.c
-	$(CC) -o $@ -c $< $(CFLAGS)
+	$(CC) -o $@ -c $< $(CFLAGS) $(DEFINES)
 
 clean:
 	-$(RM) *.a *.o
