@@ -32,7 +32,7 @@ WriteMakefile(
       (ABSTRACT_FROM  => 'lib/IPTables/libiptc.pm', # retrieve abstract from module
        AUTHOR         => 'Jesper Dangaard Brouer <jdb@comx.dk>') : ()),
     LIBS              => ['-liptc -ldl -lnsl'], # e.g., '-lm'
-    LDDLFLAGS         => '-shared -L/usr/local/stow/lib',
+    LDDLFLAGS         => '-shared -Llibrary_iptc/ -L/usr/local/stow/lib',
     LDFLAGS           => '-L/usr/local/stow/lib',
     DEFINE            => '-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DIPT_LIB_DIR=\"$(PREFIX)/lib/iptables\"',
                          # e.g., '-DHAVE_SOMETHING'
