@@ -42,7 +42,7 @@ our @EXPORT = qw(
 	IPT_MIN_ALIGN
 );
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
@@ -110,6 +110,11 @@ This package has another approach, it links with the systems libiptc.a
 library and depend on dynamic loading of iptables extensions available
 on the system.
 
+CHANGES: as libiptc.c contained some bugs, it has been necessary to
+include it the module and compile libiptc.a our self.  The module
+still depends on the iptables extensions being available on the
+system.
+
 The module only exports the libiptc chain manipulation functions.  All
 rule manipulations are done through the iptables.c C<do_command>
 function.  As iptables.c is not made as a library, the package
@@ -133,6 +138,11 @@ the behavior/purpose of this perl module.
 
 
 =head1 METHODS
+
+Most methods will return 1 for success, or 0 for failure (and on
+failure, set $! to a string describing the reason for the
+failure). Unless otherwise noted, you can assume that all methods will
+use this convention.
 
 =head2 Chain Operations
 
