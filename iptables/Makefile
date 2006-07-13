@@ -44,4 +44,4 @@ iptables-standalone: iptables-standalone.c iptables.o
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 clean:
-	rm iptables-standalone *.o *~
+	rm iptables-standalone *.o
