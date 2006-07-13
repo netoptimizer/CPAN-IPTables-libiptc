@@ -347,7 +347,8 @@ static void iptcc_delete_rule(struct rule_head *r)
 	    && r->jump)
 		r->jump->references--;
 
-	list_del(&r->list);
+	if (r->list.next && r->list.prev)
+	  list_del(&r->list);
 	free(r);
 }
 
@@ -1515,6 +1516,8 @@ TC_DELETE_ENTRY(const IPT_CHAINLABEL chain,
 
 	memcpy(r->entry, origfw, origfw->next_offset);
 	r->counter_map.maptype = COUNTER_MAP_NOMAP;
+
+	/* Remember that iptcc_map_target increment target chain references */
 	if (!iptcc_map_target(*handle, r)) {
 		DEBUGP("unable to map target of rule for chain `%s'\n", chain);
 		free(r);
@@ -1542,13 +1545,13 @@ TC_DELETE_ENTRY(const IPT_CHAINLABEL chain,
 
 		c->num_rules--;
 		iptcc_delete_rule(i);
+		iptcc_delete_rule(r); /* free and decrement references */
 
 		set_changed(*handle);
-		free(r);
 		return 1;
 	}
 
-	free(r);
+	iptcc_delete_rule(r); /* free and decrement references */
 	errno = ENOENT;
 	return 0;
 }
