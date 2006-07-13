@@ -15,8 +15,14 @@ IPTABLES_VERSION:=1.3.4
 iptables/iptables.o: iptables/*.c
 	make -C iptables/ all PREFIX=\"\$(PREFIX)\" IPTABLES_VERSION=\"\$(IPTABLES_VERSION)\" IPT_LIB_DIR=\"\$(PREFIX)/lib/iptables\"
 
+
+library_iptc/libiptc.a: library_iptc/*.c
+        make -C library_iptc/ all IPTABLES_VERSION=\"\$(IPTABLES_VERSION)\"
+
+
 clean::
 	make -C iptables/ clean
+	make -C library_iptc/ clean
 ";
         }
 }
@@ -40,7 +46,8 @@ WriteMakefile(
                          # e.g., '-I. -I/usr/include/other'
 	# Un-comment this if you add C files to link with later:
     # OBJECT            => '$(O_FILES)', # link all the C files too
-    OBJECT            => '$(O_FILES) iptables/iptables.o', # link all the C files too
+    OBJECT            => '$(O_FILES) iptables/iptables.o library_iptc/libiptc.a',
+                      # link all the C files too
     PREFIX            => '/usr/local/stow',
     TYPEMAPS          => ['libiptc.typemap']
 );
