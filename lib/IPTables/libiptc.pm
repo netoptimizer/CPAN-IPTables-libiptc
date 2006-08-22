@@ -67,10 +67,10 @@ sub AUTOLOAD {
     goto &$AUTOLOAD;
 }
 
-require XSLoader;
-XSLoader::load('IPTables::libiptc', $VERSION);
+#require XSLoader;
+#XSLoader::load('IPTables::libiptc', $VERSION);
 
-#bootstrap IPTables::libiptc $VERSION;
+bootstrap IPTables::libiptc $VERSION;
 
 # Preloaded methods go here.
 
