@@ -115,6 +115,8 @@ include it the module and compile libiptc.a our self.  The module
 still depends on the iptables extensions being available on the
 system.
 
+NOTE: The bug has been fixed and included in iptables release 1.3.6.
+
 The module only exports the libiptc chain manipulation functions.  All
 rule manipulations are done through the iptables.c C<do_command>
 function.  As iptables.c is not made as a library, the package

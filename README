@@ -28,6 +28,8 @@ This module requires these other modules and libraries:
  iptables
  libiptc.a
 
+ iptables version 1.3.6 or later, because version before that had a
+ chain reference bug (fixed in 1.3.6 by me).
 
 COPYRIGHT AND LICENCE
 
