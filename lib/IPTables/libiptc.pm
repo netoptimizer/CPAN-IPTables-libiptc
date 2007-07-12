@@ -113,7 +113,7 @@ on the system.
 CHANGES: as libiptc.c contained some bugs, it has been necessary to
 include it the module and compile libiptc.a our self.  The module
 still depends on the iptables extensions being available on the
-system.
+system. This unfortunatly makes a dependency to iptables version 1.3.4.
 
 NOTE: The bug has been fixed and included in iptables release 1.3.6.
 
