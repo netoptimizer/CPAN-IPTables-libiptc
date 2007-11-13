@@ -1,16 +1,28 @@
-IPTables-libiptc version 0.02
+IPTables-libiptc version 0.03
 =============================
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+This package provides a Perl interface to the netfilter/iptables
+C-library libiptc.
 
-A README file is required for CPAN modules since CPAN extracts the
-README file from a module distribution so that people browsing the
-archive can use it get an idea of the modules uses. It is usually a
-good idea to provide version information here so that people can
-decide whether fixes for the module are worth downloading.
+Advantages of this module: Many rule changes can be done very
+fast. Several rule changes is committed atomically.
+
+This module is heavily inspired by the CPAN module IPTables-IPv4.  The
+CPAN module IPTables-IPv4 could not be used because it has not been
+keept up-to-date, with the newest iptables extentions.  This is a
+result of the module design, as it contains every extention and thus
+needs to port them individually.
+
+This package has another approach, it links with the systems libiptc.a
+library and depend on dynamic loading of iptables extensions available
+on the system.
+
+This design limits us to only export the libiptc chain manipulation
+functions.  All rule manipulations are done through the iptables.c
+"do_command" function. (As iptables.c is not made as a library, the
+package unfortunally needs to maintain/contain this C file).
+
+
 
 INSTALLATION
 
@@ -19,7 +31,7 @@ To install this module type the following:
    perl Makefile.PL PREFIX=/usr/local/stow/
    make
    sudo make test
-   make install PREFIX=/usr/local/stow/stow/IPTables-libiptc-0.02
+   make install PREFIX=/usr/local/stow/stow/IPTables-libiptc-0.03
 
 DEPENDENCIES
 
@@ -30,7 +42,7 @@ This module requires these other modules and libraries:
 
  Currently depends on iptables/libiptc version 1.3.4, because this
  version contained a chain reference bug.  For this reason, it has
- been necessary to include it the module and compile libiptc.a our
+ been necessary to include it in the module and compile libiptc.a our
  self, with this bug fixed.
 
  This has been fixed in 1.3.6 by me, but this module has not been
