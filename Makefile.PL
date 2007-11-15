@@ -42,7 +42,7 @@ WriteMakefile(
     LDFLAGS           => '-L$(PREFIX)/lib',
     DEFINE            => '-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DIPT_LIB_DIR=\"$(PREFIX)/lib/iptables\"',
                          # e.g., '-DHAVE_SOMETHING'
-    INC               => '-I. -I/usr/local/stow/include',
+    INC               => '-I/usr/local/include -I./include -I.',
                          # e.g., '-I. -I/usr/include/other'
     # Un-comment this if you add C files to link with later:
     # OBJECT            => '$(O_FILES)', # link all the C files too
