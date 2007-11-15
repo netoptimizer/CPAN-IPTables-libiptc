@@ -1,5 +1,9 @@
 Revision history for Perl extension IPTables::libiptc.
 
+0.04  Thu Nov 15 16:01:16 2007
+	- First CPAN release.
+	  Primarily documentation updates.
+
 0.03  Thu Jul 13 16:24:07 2006
 	- Because libiptc.c contained some bugs, it has been
           necessary to include it the module and compile libiptc.a our
