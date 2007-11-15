@@ -90,7 +90,7 @@ IPTables::libiptc - Perl extension for iptables libiptc
 
   $table = IPTables::libiptc::init('filter');
 
-  $table->create_chain("badehat");
+  $table->create_chain("mychain");
 
   # Its important to commit/push-back the changes to the kernel
   $table->commit();
@@ -100,11 +100,11 @@ IPTables::libiptc - Perl extension for iptables libiptc
 This package provides a perl interface to the netfilter/iptables
 C-code and library C<libiptc>.
 
-This package is written from scratch, but is inspired by the CPAN
-module IPTables-IPv4.  The CPAN module IPTables-IPv4 could not be used
-because it has not been keept up-to-date, with the newest iptables
-extentions.  This is a result of the module design, as it contains
-every extention and thus needs to port them individually.
+This module is heavily inspired by the CPAN module IPTables-IPv4.  The
+CPAN module IPTables-IPv4 could not be used because it has not been
+keept up-to-date, with the newest iptables extentions.  This is a
+result of the module design, as it contains every extention and thus
+needs to port them individually.
 
 This package has another approach, it links with the systems libiptc.a
 library and depend on dynamic loading of iptables extensions available
@@ -115,7 +115,8 @@ include it the module and compile libiptc.a our self.  The module
 still depends on the iptables extensions being available on the
 system. This unfortunatly makes a dependency to iptables version 1.3.4.
 
-NOTE: The bug has been fixed and included in iptables release 1.3.6.
+NOTE: The bug has been fixed (by me) and included in iptables release
+1.3.6.
 
 The module only exports the libiptc chain manipulation functions.  All
 rule manipulations are done through the iptables.c C<do_command>
