@@ -3,6 +3,9 @@
 use lib qw(../blib/lib);
 use lib qw(../blib/arch);
 
+use lib qw(blib/lib);
+use lib qw(blib/arch);
+
 #use ExtUtils::testlib;
 
 use Data::Dumper;

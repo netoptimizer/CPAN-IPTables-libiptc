@@ -100,6 +100,9 @@ IPTables::libiptc - Perl extension for iptables libiptc
 This package provides a perl interface to the netfilter/iptables
 C-code and library C<libiptc>.
 
+Advantages of this module: Many rule changes can be done very
+fast. Several rule changes is committed atomically.
+
 This module is heavily inspired by the CPAN module IPTables-IPv4.  The
 CPAN module IPTables-IPv4 could not be used because it has not been
 keept up-to-date, with the newest iptables extentions.  This is a
@@ -139,6 +142,9 @@ Thus, with this knowledge it make sense to make several changes before
 commit'ing the changes (entire ruleset) back to the kernel.  This is
 the behavior/purpose of this perl module.
 
+This is also what makes it so very fast to many rule changes. And
+gives the property of several rule changes being committed atomically.
+
 
 =head1 METHODS
 
@@ -173,11 +179,36 @@ Sets the default policy.  C<set_policy> can be called severaly ways.
 Upon success full setting of the policy the old policy and counters
 are returned.  The counter setting values are optional.
 
+=item B<create_chain>
 
-=head2 Rules Operations
+    $success = $table->create_chain('chainname');
 
-No rules manipulation functions is mapped/export from libiptc, instead
-the iptables C<do_command> function is exported to this purpose.
+=item B<is_chain>
+
+    $success = $table->is_chain('chainname');
+
+Checks if the chain exist.
+
+
+=item B<buildin>
+
+    $success = $table->builtin('chainname');
+
+Tests if the chainname is a buildin chain.
+
+
+=item B<delete_chain>
+
+ $success = $table->delete_chain('chainname');
+
+Tries to delete the chain, returns false if it could not.
+
+
+=item B<get_references>
+
+ $refs = $table->get_references('chainname');
+
+Get a count of how many rules reference/jump to this chain.
 
 
 =head2 Listing Operations
@@ -200,6 +231,13 @@ destination IPs.  The netmask is also listed together with the IPs,
 but seperated by a C</> character.  If chainname does not exist
 C<undef> is returned.
 
+
+=head2 Rules Operations
+
+No rules manipulation functions is mapped/export from libiptc, instead
+the iptables C<do_command> function is exported to this purpose.
+
+
 =head2 Iptables commands (from iptables.h)
 
 =item B<iptables_do_command>
@@ -221,17 +259,11 @@ None by default.
   IPT_MIN_ALIGN
 
 
-
 =head1 SEE ALSO
 
-Mention other useful documentation such as the documentation of
-related modules or operating system documentation (such as man pages
-in UNIX), or any relevant external documentation such as RFCs or
-standards.
+The Netfilter/iptables homepage: http://www.netfilter.org
 
-If you have a mailing list set up for your module, mention it here.
-
-If you have a web site set up for your module, mention it here.
+L<iptables(8)>
 
 =head1 AUTHOR
 
