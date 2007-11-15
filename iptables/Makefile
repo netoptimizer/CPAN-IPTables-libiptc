@@ -11,7 +11,7 @@ IPTABLES_VERSION:=1.3.4
 endif
 
 ifndef PREFIX
-PREFIX:=/usr/local/stow
+PREFIX:=/usr/local/
 endif
 
 LIBDIR:=$(PREFIX)/lib
@@ -25,6 +25,10 @@ ifndef LDFLAGS
 LDFLAGS = -L$(LIBDIR)
 endif
 LDFLAGS+=-rdynamic
+
+# Local version of libiptc
+# ($(LOCAL_LIB_IPTC) cannot be used here because it needs a "../")
+LD_LOCAL_IPTC:=-L../library_iptc/
 
 LDLIBS=-liptc -ldl -lnsl
 
@@ -41,7 +45,7 @@ iptables.o: iptables.c Makefile
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 iptables-standalone: iptables-standalone.c iptables.o
-	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) $(LD_LOCAL_IPTC) -o $@ $^ $(LDLIBS)
 
 clean:
 	rm iptables-standalone *.o
