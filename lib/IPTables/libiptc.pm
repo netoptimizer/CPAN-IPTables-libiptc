@@ -261,6 +261,9 @@ None by default.
 
 =head1 SEE ALSO
 
+Module source also available here:
+ http://people.netfilter.org/hawk/perl_modules/
+
 The Netfilter/iptables homepage: http://www.netfilter.org
 
 L<iptables(8)>
