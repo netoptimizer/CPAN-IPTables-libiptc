@@ -35,12 +35,17 @@ if( $success = $table->builtin("$chainname")) {
     print "Chain is NOT buildin: $chainname\n";
 }
 
+$chainname = "test";
+if( $success = $table->create_chain("$chainname")) {
+    print "Chain $chainname is created\n";
+} else {
+    print "Chain $chainname is NOT created\n";
+}
+
 
 #@arguments = ("-t", "filter", "-A", "INPUT");
 #@arguments = ("-A", "INPUT", "-s", "1.2.3.4");
 #@arguments = ("-N", "test");
-#@arguments = ("badehat", "-N test");
-#@arguments = ("badehat", "-N", "test");
 #@arguments = ("-N", "test");
 #@arguments = ("-A test", "-p", "tcp");
 #@arguments = ("-I", "test", "-s", "4.3.2.1");

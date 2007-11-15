@@ -416,7 +416,7 @@ iptables_do_command(self, array_ref)
     SV  * array_ref;
   INIT:
     static char * argv[255];
-    static char * fake_table[0];
+    static char * fake_table[1];
     int argc;      /* number of args */
     int array_len; /* number of array elements */
     int n;
