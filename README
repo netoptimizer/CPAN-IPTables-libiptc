@@ -23,16 +23,6 @@ functions.  All rule manipulations are done through the iptables.c
 package unfortunally needs to maintain/contain this C file).
 
 
-
-INSTALLATION
-
-To install this module type the following:
-
-   perl Makefile.PL PREFIX=/usr/local/stow/
-   make
-   sudo make test
-   make install PREFIX=/usr/local/stow/stow/IPTables-libiptc-0.03
-
 DEPENDENCIES
 
 This module requires these other modules and libraries:
@@ -40,18 +30,43 @@ This module requires these other modules and libraries:
  iptables
  libiptc.a
 
+The iptables version installed on your system needs to match the
+IPTABLES_VERSION variable this module is compiled with.
+
  Currently depends on iptables/libiptc version 1.3.4, because this
  version contained a chain reference bug.  For this reason, it has
  been necessary to include it in the module and compile libiptc.a our
- self, with this bug fixed.
+ self, with this bug fixed. This has been fixed in 1.3.6 by me, but
+ this module has not been updated yet.
 
- This has been fixed in 1.3.6 by me, but this module has not been
- updated yet.
+Thus, to get started using this module quickly, download and install
+iptables version 1.3.4 on your system.
+
+To use a newer version (that 1.3.4) with this module:
+
+ 1. From iptables tarball, copy libiptc/libip*.c to library_iptc/
+
+ 2. Copy iptables.c to iptables/
+
+ 3. Change the variable IPTABLES_VERSION in Makefile.PL
+
+
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL PREFIX=/usr/local/
+   make
+   sudo make test
+   make install PREFIX=/usr/local/stow/IPTables-libiptc-0.03
+
+   cd /usr/local/stow/
+   stow IPTables-libiptc-0.03
 
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2006 by Jesper Dangaard Brouer
+Copyright (C) 2006 by Jesper Dangaard Brouer <hawk@people.netfilter.org>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.4 or,
