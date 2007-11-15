@@ -57,14 +57,18 @@ To use a newer version (that 1.3.4) with this module:
 
 INSTALLATION
 
-Notice that the PREFIX variable influence (IPT_LIB_DIR) the iptables
-path for dynamic loading.  This can be changed runtime setting the
-environment variable IPTABLES_LIB_DIR.
+Notice this module depends on iptables dynamic loadable libraries,
+thus it needs to know the path to them (default assumes they are
+located in /lib/iptables).  The iptables path for dynamic loading
+(where the libipt_*.so files are located) can be altered by setting
+the variable IPTABLES_LIB_DIR while calling make.  This can also be
+changed later at runtime setting the environment variable
+IPTABLES_LIB_DIR.
 
 To install this module type the following:
 
    perl Makefile.PL PREFIX=/usr/local/
-   make
+   make IPTABLES_LIB_DIR=/usr/local/lib/iptables
    sudo make test
    make install PREFIX=/usr/local/stow/IPTables-libiptc-0.03
 

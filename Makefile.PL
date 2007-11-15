@@ -7,6 +7,7 @@ use ExtUtils::MakeMaker;
 	sub post_initialize {
 "
 IPTABLES_VERSION:=1.3.4
+IPTABLES_LIB_DIR:=/lib/iptables
 LOCAL_LIB_IPTC:=-Llibrary_iptc/
 "
         }
@@ -17,7 +18,7 @@ library_iptc/libiptc.a: library_iptc/*.c
 	make -C library_iptc/ all IPTABLES_VERSION=\"\$(IPTABLES_VERSION)\"
 
 iptables/iptables.o: iptables/*.c library_iptc/libiptc.a
-	make -C iptables/ all PREFIX=\"\$(PREFIX)\" IPTABLES_VERSION=\"\$(IPTABLES_VERSION)\" IPT_LIB_DIR=\"\$(PREFIX)/lib/iptables\"
+	make -C iptables/ all PREFIX=\"\$(PREFIX)\" IPTABLES_VERSION=\"\$(IPTABLES_VERSION)\" IPT_LIB_DIR=\"\$(IPTABLES_LIB_DIR)\"
 
 
 clean::
@@ -36,11 +37,11 @@ WriteMakefile(
     PREREQ_PM         => {}, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/IPTables/libiptc.pm', # retrieve abstract from module
-       AUTHOR         => 'Jesper Dangaard Brouer <jdb@comx.dk>') : ()),
+       AUTHOR         => 'Jesper Dangaard Brouer <hawk@comx.dk>') : ()),
     LIBS              => ['-liptc -ldl -lnsl'], # e.g., '-lm'
     LDDLFLAGS         => '-shared $(LOCAL_LIB_IPTC) -L$(PREFIX)/lib',
     LDFLAGS           => '-L$(PREFIX)/lib',
-    DEFINE            => '-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DIPT_LIB_DIR=\"$(PREFIX)/lib/iptables\"',
+    DEFINE            => '-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DIPT_LIB_DIR=\"$(IPTABLES_LIB_DIR)\"',
                          # e.g., '-DHAVE_SOMETHING'
     INC               => '-I/usr/local/include -I./include -I.',
                          # e.g., '-I. -I/usr/include/other'
@@ -48,7 +49,7 @@ WriteMakefile(
     # OBJECT            => '$(O_FILES)', # link all the C files too
     OBJECT            => '$(O_FILES) iptables/iptables.o',
                       # link all the C files too
-    PREFIX            => '/usr/local/stow',
+    PREFIX            => '/usr/local',
     TYPEMAPS          => ['libiptc.typemap'],
 #   depend             => { 'iptables/iptables.o' => 'library_iptc/libiptc.a'}
 #   depend             => { 'iptables/iptables.o' => 'library_iptc/libiptc.a'}
