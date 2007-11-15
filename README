@@ -42,6 +42,10 @@ IPTABLES_VERSION variable this module is compiled with.
 Thus, to get started using this module quickly, download and install
 iptables version 1.3.4 on your system.
 
+REMEMBER also to do a: 'make install-devel'
+
+Debian hint: "apt-get install iptables-dev" to get libiptc.h.
+
 To use a newer version (that 1.3.4) with this module:
 
  1. From iptables tarball, copy libiptc/libip*.c to library_iptc/
@@ -52,6 +56,10 @@ To use a newer version (that 1.3.4) with this module:
 
 
 INSTALLATION
+
+Notice that the PREFIX variable influence (IPT_LIB_DIR) the iptables
+path for dynamic loading.  This can be changed runtime setting the
+environment variable IPTABLES_LIB_DIR.
 
 To install this module type the following:
 
