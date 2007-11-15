@@ -6,6 +6,11 @@ ppport.h
 README
 t/IPTables-libiptc.t
 t/00simple.t
+t/01_chain_create.t
+t/02_chain_create_commit.t
+t/03_chain_exist.t
+t/04_chain_delete_commit.t
+t/10_rule_create.t
 test/test01.pl
 test/test03.pl
 test/test04.pl
