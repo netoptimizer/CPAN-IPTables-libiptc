@@ -6,6 +6,11 @@ ppport.h
 README
 t/IPTables-libiptc.t
 t/00simple.t
+test/test01.pl
+test/test03.pl
+test/test04.pl
+test/test05.pl
+test/test07_bug.pl
 fallback/const-c.inc
 fallback/const-xs.inc
 lib/IPTables/libiptc.pm

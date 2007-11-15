@@ -78,7 +78,7 @@ my $hat = eval { call_do_command(\@arguments)};
 
 #@arguments = ("-A test", "-p", "tcp");
 #@arguments = ("-I", "test", "-s", "4.3.2.1");
-@arguments = ("-I", "test", "-s", "4.3.2.1", "-j", "ACCEPT");
+@arguments = ("-I", "test", "-s", "1.2.3.4", "-j", "ACCEPT");
 #@arguments = ("-t", "filter", "-N test");
 #@arguments = ("-h");
 #@arguments = ("--help");
