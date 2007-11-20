@@ -1,9 +1,29 @@
 Changes
 libiptc.xs
+libiptc.typemap
 Makefile.PL
 MANIFEST
 ppport.h
 README
+
+include/libiptc/libiptc.h
+include/libiptc/libip6tc.h
+include/libiptc/ipt_kernel_headers.h
+
+iptables/iptables.c
+iptables/iptables-standalone.c
+iptables/Makefile
+include/iptables.h
+include/iptables_common.h
+
+library_iptc/libip4tc.c
+library_iptc/libip6tc.c
+library_iptc/libiptc.c
+library_iptc/Makefile
+library_iptc/patch01.references_bug01
+include/linux_list.h
+include/linux_stddef.h
+
 t/IPTables-libiptc.t
 t/00simple.t
 t/01_chain_create.t
@@ -18,5 +38,6 @@ test/test05.pl
 test/test07_bug.pl
 fallback/const-c.inc
 fallback/const-xs.inc
+
 lib/IPTables/libiptc.pm
 META.yml                                 Module meta-data (added by MakeMaker)

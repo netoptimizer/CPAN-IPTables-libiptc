@@ -1,5 +1,11 @@
 Revision history for Perl extension IPTables::libiptc.
 
+0.05  Tue Nov 20 12:47:11 2007
+	- Bugfix: Include all files in tarball by updating MANIFEST.
+	  Version 0.04 could not compile, because the tarball did not
+	  contain all the relevant files (ups, didn't keep MANIFEST in
+	  sync).
+
 0.04  Thu Nov 15 16:01:16 2007
 	- First CPAN release.
 	  Primarily documentation updates.
