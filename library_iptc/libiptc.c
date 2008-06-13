@@ -347,8 +347,7 @@ static void iptcc_delete_rule(struct rule_head *r)
 	    && r->jump)
 		r->jump->references--;
 
-	if (r->list.next && r->list.prev)
-	  list_del(&r->list);
+	list_del(&r->list);
 	free(r);
 }
 
