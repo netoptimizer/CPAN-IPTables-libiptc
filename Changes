@@ -1,5 +1,11 @@
 Revision history for Perl extension IPTables::libiptc.
 
+Recent changes
+	- Matthew "Cheetah" Gabeler-Lee <cheetah(at)fastcat.org>:
+		Make it compile even if iptables libiptc is not on the
+          	system, by linking with local library object libiptc in
+                library_iptc/libiptc.a.
+
 0.05  Tue Nov 20 12:47:11 2007
 	- Bugfix: Include all files in tarball by updating MANIFEST.
 	  Version 0.04 could not compile, because the tarball did not
