@@ -12,6 +12,7 @@ include/libiptc/ipt_kernel_headers.h
 
 iptables/iptables.c
 iptables/iptables-standalone.c
+iptables/iptables-blocking.c
 iptables/Makefile
 include/iptables.h
 include/iptables_common.h
