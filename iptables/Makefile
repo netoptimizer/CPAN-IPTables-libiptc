@@ -51,4 +51,4 @@ iptables-blocking: iptables-blocking.c iptables.o
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) $(LD_LOCAL_IPTC) -o $@ $^ $(LDLIBS)
 
 clean:
-	rm iptables-standalone *.o
+	rm iptables-standalone iptables-blocking *.o
