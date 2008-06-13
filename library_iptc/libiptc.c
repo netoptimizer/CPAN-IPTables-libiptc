@@ -1,4 +1,4 @@
-/* Library which manipulates firewall rules.  Version $Revision: 6588 $ */
+/* Library which manipulates firewall rules.  Version $Revision: 7138 $ */
 
 /* Architecture of firewall rules is as follows:
  *
@@ -48,14 +48,14 @@ static int sockfd = -1;
 static int sockfd_use = 0;
 static void *iptc_fn = NULL;
 
-static const char *hooknames[]
-= { [HOOK_PRE_ROUTING]  "PREROUTING",
-    [HOOK_LOCAL_IN]     "INPUT",
-    [HOOK_FORWARD]      "FORWARD",
-    [HOOK_LOCAL_OUT]    "OUTPUT",
-    [HOOK_POST_ROUTING] "POSTROUTING",
+static const char *hooknames[] = {
+	[HOOK_PRE_ROUTING]	= "PREROUTING",
+	[HOOK_LOCAL_IN]		= "INPUT",
+	[HOOK_FORWARD]		= "FORWARD",
+	[HOOK_LOCAL_OUT]	= "OUTPUT",
+	[HOOK_POST_ROUTING]	= "POSTROUTING",
 #ifdef HOOK_DROPPING
-    [HOOK_DROPPING]	"DROPPING"
+	[HOOK_DROPPING]		= "DROPPING"
 #endif
 };
 
@@ -882,10 +882,6 @@ TC_INIT(const char *tablename)
 	CHECK(h);
 	return h;
 error:
-	if (--sockfd_use == 0) {
-		close(sockfd);
-		sockfd = -1;
-	}
 	TC_FREE(&h);
 	return NULL;
 }
@@ -931,7 +927,7 @@ TC_DUMP_ENTRIES(const TC_HANDLE_T handle)
 {
 	iptc_fn = TC_DUMP_ENTRIES;
 	CHECK(handle);
-#if 0
+
 	printf("libiptc v%s. %u bytes.\n",
 	       IPTABLES_VERSION, handle->entries->size);
 	printf("Table `%s'\n", handle->info.name);
@@ -950,7 +946,6 @@ TC_DUMP_ENTRIES(const TC_HANDLE_T handle)
 
 	ENTRY_ITERATE(handle->entries->entrytable, handle->entries->size,
 		      dump_entry, handle);
-#endif
 }
 
 /* Does this chain exist? */
@@ -2186,22 +2181,6 @@ TC_COMMIT(TC_HANDLE_T *handle)
 		}
 	}
 
-
-#ifdef KERNEL_64_USERSPACE_32
-	{
-		/* Kernel will think that pointer should be 64-bits, and get
-		   padding.  So we accomodate here (assumption: alignment of
-		   `counters' is on 64-bit boundary). */
-		u_int64_t *kernptr = (u_int64_t *)&newcounters->counters;
-		if ((unsigned long)&newcounters->counters % 8 != 0) {
-			fprintf(stderr,
-				"counters alignment incorrect! Mail rusty!\n");
-			abort();
-		}
-		*kernptr = newcounters->counters;
-	}
-#endif /* KERNEL_64_USERSPACE_32 */
-
 #ifdef IPTC_DEBUG2
 	{
 		int fd = open("/tmp/libiptc-so_set_add_counters.blob", 
@@ -2238,7 +2217,7 @@ out_zero:
 
 /* Get raw socket. */
 int
-TC_GET_RAW_SOCKET()
+TC_GET_RAW_SOCKET(void)
 {
 	return sockfd;
 }
