@@ -1,5 +1,10 @@
 Revision history for Perl extension IPTables::libiptc.
 
+Recent changes
+
+	- Init scalability fix NOT accepted upstream, because its not
+	  64-bit compatible.
+
 0.06  Fri Jun 13 17:13:21 CEST 2008
 	- Matthew "Cheetah" Gabeler-Lee <cheetah(at)fastcat.org>:
 		Make it compile even if iptables libiptc is not on the
