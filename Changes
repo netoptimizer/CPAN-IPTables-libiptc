@@ -6,6 +6,11 @@ Recent changes
           	system, by linking with local library object libiptc in
                 library_iptc/libiptc.a.
 
+	- libiptc: Integrated big scalability fixes. Most of
+          which has been accepted upstream in 1.4.1. The libiptc has
+          been keept up-to-date with iptables 1.4.0.
+
+
 0.05  Tue Nov 20 12:47:11 2007
 	- Bugfix: Include all files in tarball by updating MANIFEST.
 	  Version 0.04 could not compile, because the tarball did not
