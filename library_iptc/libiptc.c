@@ -344,7 +344,9 @@ iptcc_bsearch_chain_index(const char *name, unsigned int *index, TC_HANDLE_T han
 		return &handle->chains; /* Be safe, return orig start pos */
 	}
 
+	//TODO: Add support for other compare functions...
 	res = strcmp(name, handle->chain_index[pos]->name);
+
 	list_pos = &handle->chain_index[pos]->list;
 	(*index)=pos;
 
