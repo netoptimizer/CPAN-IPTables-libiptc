@@ -1,0 +1,32 @@
+commit 04a1e4cabd185d7a93bea1ece276343044d9ecd4
+Author: Patrick McHardyJesper Brouer <kaber@trash.nethawk@diku.dk>
+Date:   Tue Jul 25 01:50:48 2006 +0000
+
+    BUG: libiptc chain references bug (Jesper Brouer <hawk@diku.dk>)
+    
+    Correcting a chain references increment bug in libiptc.
+    
+    The bug lies in function iptc_delete_entry() / TC_DELETE_ENTRY.  The
+    problem is the construction of "r" the rule entry, that is used for
+    comparison. The problem is that the function iptcc_map_target()
+    increase the target chains references count.
+
+diff --git a/libiptc/libiptc.c b/libiptc/libiptc.c
+index 794904b..779df34 100644
+--- a/libiptc/libiptc.c
++++ b/libiptc/libiptc.c
+@@ -1519,6 +1519,14 @@ TC_DELETE_ENTRY(const IPT_CHAINLABEL chain,
+ 		DEBUGP("unable to map target of rule for chain `%s'\n", chain);
+ 		free(r);
+ 		return 0;
++	} else {
++		/* iptcc_map_target increment target chain references
++		 * since this is a fake rule only used for matching
++		 * the chain references count is decremented again. 
++		 */
++		if (r->type == IPTCC_R_JUMP
++		    && r->jump)
++			r->jump->references--;
+ 	}
+ 
+ 	list_for_each_entry(i, &c->rules, list) {
