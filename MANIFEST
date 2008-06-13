@@ -20,7 +20,6 @@ library_iptc/libip4tc.c
 library_iptc/libip6tc.c
 library_iptc/libiptc.c
 library_iptc/Makefile
-library_iptc/patch01.references_bug01
 include/linux_list.h
 include/linux_stddef.h
 
