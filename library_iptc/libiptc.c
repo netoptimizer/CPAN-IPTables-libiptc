@@ -362,7 +362,7 @@ __iptcc_bsearch_chain_index(const char *name, unsigned int offset,
 		break;
 	case BSEARCH_OFFSET:
 		fprintf(stderr, "Offset based bsearch NOT implemented yet!\n");
-		abort();
+		return list_pos;
 		break;
 	default:
 		fprintf(stderr, "ERROR: %d not a valid bsearch type\n",
