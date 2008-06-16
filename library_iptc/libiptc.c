@@ -147,6 +147,11 @@ STRUCT_TC_HANDLE
 	STRUCT_GET_ENTRIES *entries;
 };
 
+enum bsearch_type {
+	BSEARCH_NAME,	/* Binary search after chain name */
+	BSEARCH_OFFSET,	/* Binary search based on offset */
+};
+
 /* allocate a new chain head for the cache */
 static struct chain_head *iptcc_alloc_chain_head(const char *name, int hooknum)
 {
@@ -309,15 +314,21 @@ iptcb_ent_is_hook_entry(STRUCT_ENTRY *e, TC_HANDLE_T h)
 
 static inline unsigned int iptcc_is_builtin(struct chain_head *c);
 
-
 /* Use binary search in the chain index array, to find a chain_head
  * pointer closest to the place of the searched name element.
  *
  * Notes that, binary search (obviously) requires that the chain list
  * is sorted by name.
+ *
+ * The not so obvious: The chain index array, is actually both sorted
+ * by name and offset, at the same time!.  This is only true because,
+ * chain are stored sorted in the kernel (as we pushed it in sorted).
+ *
  */
 static struct list_head *
-iptcc_bsearch_chain_index(const char *name, unsigned int *idx, TC_HANDLE_T handle)
+__iptcc_bsearch_chain_index(const char *name, unsigned int offset,
+			    unsigned int *idx, TC_HANDLE_T handle,
+			    enum bsearch_type type)
 {
 	unsigned int pos, end;
 	int res;
@@ -344,7 +355,23 @@ iptcc_bsearch_chain_index(const char *name, unsigned int *idx, TC_HANDLE_T handl
 		return &handle->chains; /* Be safe, return orig start pos */
 	}
 
-	res = strcmp(name, handle->chain_index[pos]->name);
+	/* Support for different compare functions */
+	switch (type) {
+	case BSEARCH_NAME:
+		res = strcmp(name, handle->chain_index[pos]->name);
+		break;
+	case BSEARCH_OFFSET:
+		fprintf(stderr, "Offset based bsearch NOT implemented yet!\n");
+		abort();
+		break;
+	default:
+		fprintf(stderr, "ERROR: %d not a valid bsearch type\n",
+			type);
+		abort();
+		break;
+	}
+
+
 	list_pos = &handle->chain_index[pos]->list;
 	(*idx)=pos;
 
@@ -387,6 +414,16 @@ iptcc_bsearch_chain_index(const char *name, unsigned int *idx, TC_HANDLE_T handl
 
 	return list_pos;
 }
+
+/* Wrapper for string chain name based bsearch */
+static struct list_head *
+iptcc_bsearch_chain_index(const char *name, unsigned int *idx,
+			  TC_HANDLE_T handle)
+{
+	return __iptcc_bsearch_chain_index(name, 0, idx, handle, BSEARCH_NAME);
+}
+
+
 
 #ifdef DEBUG
 /* Trivial linear search of chain index. Function used for verifying
