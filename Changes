@@ -1,9 +1,12 @@
 Revision history for Perl extension IPTables::libiptc.
 
 
-Recent Changes
+0.08  Mon Jun 16 17:11:51 CEST 2008
+	- New implementaion of the the "init" scalability fix, which
+	  is 64-bit compatible.  This implementation is based on binary
+	  search (time complexity has gone from O(n^2) to O(log(n)).
 
-	- Revert the "init" scalability fix.
+	- Revert the not accepted "init" scalability fix.
 
 0.07  Mon Jun 16 07:08:33 CEST 2008
 	- Includes the "init" scalability fix, NOT accepted upstream,
