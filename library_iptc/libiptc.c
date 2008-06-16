@@ -317,7 +317,7 @@ static inline unsigned int iptcc_is_builtin(struct chain_head *c);
  * is sorted by name.
  */
 static struct list_head *
-iptcc_bsearch_chain_index(const char *name, unsigned int *index, TC_HANDLE_T handle)
+iptcc_bsearch_chain_index(const char *name, unsigned int *idx, TC_HANDLE_T handle)
 {
 	unsigned int pos, end;
 	int res;
@@ -344,11 +344,9 @@ iptcc_bsearch_chain_index(const char *name, unsigned int *index, TC_HANDLE_T han
 		return &handle->chains; /* Be safe, return orig start pos */
 	}
 
-	//TODO: Add support for other compare functions...
 	res = strcmp(name, handle->chain_index[pos]->name);
-
 	list_pos = &handle->chain_index[pos]->list;
-	(*index)=pos;
+	(*idx)=pos;
 
 	debug("bsearch Index[%d] name:%s res:%d ",
 	      pos, handle->chain_index[pos]->name, res);
