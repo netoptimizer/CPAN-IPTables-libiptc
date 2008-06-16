@@ -1,9 +1,14 @@
 Revision history for Perl extension IPTables::libiptc.
 
-Recent changes
 
-	- Init scalability fix NOT accepted upstream, because its not
-	  64-bit compatible.
+0.07  Mon Jun 16 07:08:33 CEST 2008
+	- Includes the "init" scalability fix, NOT accepted upstream,
+          because its not 64-bit compatible.  The initial parsing of
+          the ruleset, during pull-out from kernel, is suboptimal.
+	  Its gets slower when the number of chains and jump rules
+	  increase.
+
+	http://thread.gmane.org/gmane.comp.security.firewalls.netfilter.devel/21458
 
 0.06  Fri Jun 13 17:13:21 CEST 2008
 	- Matthew "Cheetah" Gabeler-Lee <cheetah(at)fastcat.org>:
