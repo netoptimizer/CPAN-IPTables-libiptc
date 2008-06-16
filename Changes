@@ -1,6 +1,10 @@
 Revision history for Perl extension IPTables::libiptc.
 
 
+Recent Changes
+
+	- Revert the "init" scalability fix.
+
 0.07  Mon Jun 16 07:08:33 CEST 2008
 	- Includes the "init" scalability fix, NOT accepted upstream,
           because its not 64-bit compatible.  The initial parsing of

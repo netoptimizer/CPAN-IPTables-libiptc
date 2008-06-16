@@ -616,20 +616,13 @@ static struct rule_head *iptcc_get_rule_num_reverse(struct chain_head *c,
 static struct chain_head *
 iptcc_find_chain_by_offset(TC_HANDLE_T handle, unsigned int offset)
 {
+	struct list_head *pos;
+
 	if (list_empty(&handle->chains))
 		return NULL;
 
-	/* Find the entry pointed to by offset */
-	STRUCT_ENTRY * e = iptcb_offset2entry(handle, offset);
-
-	/* When parsing the blob (in cache_add_entry), the entry
-	   field comefrom has been modified to contain a pointer
-	   to the chain it belongs to.
-	*/
-	struct chain_head *c = (struct chain_head *)e->comefrom;
-
-	if (c) {
-		/* Extra verifying step*/
+	list_for_each(pos, &handle->chains) {
+		struct chain_head *c = list_entry(pos, struct chain_head, list);
 		if (offset >= c->head_offset && offset <= c->foot_offset)
 			return c;
 	}
@@ -910,14 +903,6 @@ new_rule:
 		r->index = *num;
 		r->offset = offset;
 		memcpy(r->entry, e, e->next_offset);
-
-		/*
-		  Modify the blob entry to contain a pointer to the
-		  chain it belongs to.  Needed later to resolve jump
-		  targets faster (used in iptcc_find_chain_by_offset)
-		*/
-		e->comefrom = (unsigned int)h->chain_iterator_cur;
-
 		r->counter_map.maptype = COUNTER_MAP_NORMAL_MAP;
 		r->counter_map.mappos = r->index;
 
