@@ -1,6 +1,6 @@
 Revision history for Perl extension IPTables::libiptc.
 
-0.09-rc2
+0.09  Tue Jun 17 16:06:33 CEST 2008
 	- Fix output for unspecified proto was "0" change back to
 	  original behaviour "all".
 
