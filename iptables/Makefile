@@ -28,9 +28,13 @@ LDFLAGS+=-rdynamic
 
 # Local version of libiptc
 # ($(LOCAL_LIB_IPTC) cannot be used here because it needs a "../")
-LD_LOCAL_IPTC:=-L../library_iptc/
+#LD_LOCAL_IPTC:=-L../library_iptc/
+#
+# Need to link directly with object library
+LOCAL_IPTC_OBJ:=../library_iptc/libiptc.a
 
-LDLIBS=-liptc -ldl -lnsl
+#LDLIBS=-liptc -ldl -lnsl
+LDLIBS=-ldl -lnsl
 
 COPT_FLAGS:=-O2
 CFLAGS:=$(COPT_FLAGS) -Wall -Wunused -I$(KERNEL_DIR)/include -I$(INCDIR) -I../include/
@@ -45,10 +49,10 @@ iptables.o: iptables.c Makefile
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 iptables-standalone: iptables-standalone.c iptables.o
-	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) $(LD_LOCAL_IPTC) -o $@ $^ $(LDLIBS)
+	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LOCAL_IPTC_OBJ) $(LDLIBS)
 
 iptables-blocking: iptables-blocking.c iptables.o
-	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) $(LD_LOCAL_IPTC) -o $@ $^ $(LDLIBS)
+	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LOCAL_IPTC_OBJ) $(LDLIBS)
 
 clean:
 	rm iptables-standalone iptables-blocking *.o
