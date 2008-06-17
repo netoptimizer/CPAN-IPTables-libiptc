@@ -1,11 +1,11 @@
 Revision history for Perl extension IPTables::libiptc.
 
-0.09-rc1
+0.09-rc2
 	- Fix output for unspecified proto was "0" change back to
 	  original behaviour "all".
 
 	- iptables-blocking: link explicit with local library
-	  libiptc.a.
+	  libiptc.a.  Install in sbin/.
 
 0.08  Mon Jun 16 17:11:51 CEST 2008
 	- New implementaion of the the "init" scalability fix, which

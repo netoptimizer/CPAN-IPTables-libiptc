@@ -16,6 +16,7 @@ endif
 
 LIBDIR:=$(PREFIX)/lib
 INCDIR:=$(PREFIX)/include
+SBINDIR:=$(PREFIX)/sbin
 
 ifndef IPT_LIBDIR
 IPT_LIBDIR:=$(LIBDIR)/iptables
@@ -53,6 +54,10 @@ iptables-standalone: iptables-standalone.c iptables.o
 
 iptables-blocking: iptables-blocking.c iptables.o
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LOCAL_IPTC_OBJ) $(LDLIBS)
+
+install:
+	install -m 0755 -d $(DESTDIR)/$(SBINDIR)
+	install -m 0755 iptables-blocking $(DESTDIR)/$(SBINDIR)
 
 clean:
 	rm iptables-standalone iptables-blocking *.o

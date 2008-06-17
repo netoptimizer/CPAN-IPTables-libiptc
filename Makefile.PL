@@ -20,6 +20,8 @@ library_iptc/libiptc.a: library_iptc/*.c
 iptables/iptables.o: iptables/*.c library_iptc/libiptc.a
 	make -C iptables/ all PREFIX=\"\$(PREFIX)\" IPTABLES_VERSION=\"\$(IPTABLES_VERSION)\" IPT_LIB_DIR=\"\$(IPTABLES_LIB_DIR)\"
 
+install::
+	make -C iptables/ install
 
 clean::
 	make -C iptables/ clean
