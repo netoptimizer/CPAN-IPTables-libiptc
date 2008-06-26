@@ -1056,18 +1056,18 @@ static int parse_table(TC_HANDLE_T h)
 	list_for_each_entry(c, &h->chains, list) {
 		struct rule_head *r;
 		list_for_each_entry(r, &c->rules, list) {
-			struct chain_head *c;
+			struct chain_head *lc;
 			STRUCT_STANDARD_TARGET *t;
 
 			if (r->type != IPTCC_R_JUMP)
 				continue;
 
 			t = (STRUCT_STANDARD_TARGET *)GET_TARGET(r->entry);
-			c = iptcc_find_chain_by_offset(h, t->verdict);
-			if (!c)
+			lc = iptcc_find_chain_by_offset(h, t->verdict);
+			if (!lc)
 				return -1;
-			r->jump = c;
-			c->references++;
+			r->jump = lc;
+			lc->references++;
 		}
 	}
 
