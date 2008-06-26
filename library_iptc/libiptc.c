@@ -53,7 +53,8 @@
 static int sockfd = -1;
 static int sockfd_use = 0;
 static void *iptc_fn = NULL;
-static int not_sorted_chain_offsets = 0;
+
+static int not_sorted_chain_offsets = 0; //FIXME: Move to handle
 
 static const char *hooknames[] = {
 	[HOOK_PRE_ROUTING]	= "PREROUTING",
