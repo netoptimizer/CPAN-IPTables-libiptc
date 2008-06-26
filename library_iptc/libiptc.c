@@ -1568,7 +1568,7 @@ TC_NEXT_RULE(const STRUCT_ENTRY *prev, TC_HANDLE_T *handle)
 }
 
 /* How many rules in this chain? */
-unsigned int
+static unsigned int
 TC_NUM_RULES(const char *chain, TC_HANDLE_T *handle)
 {
 	struct chain_head *c;
@@ -1584,9 +1584,8 @@ TC_NUM_RULES(const char *chain, TC_HANDLE_T *handle)
 	return c->num_rules;
 }
 
-const STRUCT_ENTRY *TC_GET_RULE(const char *chain,
-				unsigned int n,
-				TC_HANDLE_T *handle)
+static const STRUCT_ENTRY *
+TC_GET_RULE(const char *chain, unsigned int n, TC_HANDLE_T *handle)
 {
 	struct chain_head *c;
 	struct rule_head *r;
@@ -1608,7 +1607,7 @@ const STRUCT_ENTRY *TC_GET_RULE(const char *chain,
 }
 
 /* Returns a pointer to the target name of this position. */
-const char *standard_target_map(int verdict)
+static const char *standard_target_map(int verdict)
 {
 	switch (verdict) {
 		case RETURN:
@@ -2268,6 +2267,8 @@ int
 TC_CREATE_CHAIN(const IPT_CHAINLABEL chain, TC_HANDLE_T *handle)
 {
 	static struct chain_head *c;
+	int capacity;
+	int exceeded;
 
 	iptc_fn = TC_CREATE_CHAIN;
 
@@ -2307,8 +2308,8 @@ TC_CREATE_CHAIN(const IPT_CHAINLABEL chain, TC_HANDLE_T *handle)
 	 * in the buckets. Thus, only rebuild chain index when the
 	 * capacity is exceed with CHAIN_INDEX_INSERT_MAX chains.
 	 */
-	int capacity = (*handle)->chain_index_sz * CHAIN_INDEX_BUCKET_LEN;
-	int exceeded = ((((*handle)->num_chains)-capacity));
+	capacity = (*handle)->chain_index_sz * CHAIN_INDEX_BUCKET_LEN;
+	exceeded = ((((*handle)->num_chains)-capacity));
 	if (exceeded > CHAIN_INDEX_INSERT_MAX) {
 		debug("Capacity(%d) exceeded(%d) rebuild (chains:%d)\n",
 		      capacity, exceeded, (*handle)->num_chains);
