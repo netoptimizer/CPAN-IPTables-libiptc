@@ -1320,7 +1320,7 @@ TC_INIT(const char *tablename)
 			return NULL;
 	}
 	sockfd_use++;
-
+retry:
 	s = sizeof(info);
 
 	strcpy(info.name, tablename);
@@ -1373,6 +1373,9 @@ TC_INIT(const char *tablename)
 	return h;
 error:
 	TC_FREE(&h);
+	/* A different process changed the ruleset size, retry */
+	if (errno == EAGAIN)
+		goto retry;
 	return NULL;
 }
 
