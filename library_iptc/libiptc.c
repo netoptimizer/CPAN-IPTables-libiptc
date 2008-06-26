@@ -381,7 +381,7 @@ __iptcc_bsearch_chain_index(const char *name, unsigned int offset,
 
 
 	list_pos = &handle->chain_index[pos]->list;
-	(*idx)=pos;
+	*idx = pos;
 
 	if (res == 0) { /* Found element, by direct hit */
 		debug("[found] Direct hit pos:%d end:%d\n", pos, end);
@@ -604,9 +604,9 @@ static int iptcc_chain_index_delete_chain(struct chain_head *c, TC_HANDLE_T h)
 {
 	struct list_head *index_ptr, *index_ptr2, *next;
 	struct chain_head *c2;
-	unsigned int index, index2;
+	unsigned int idx, idx2;
 
-	index_ptr = iptcc_bsearch_chain_index(c->name, &index, h);
+	index_ptr = iptcc_bsearch_chain_index(c->name, &idx, h);
 
 	debug("Del chain[%s] c->list:%p index_ptr:%p\n",
 	      c->name, &c->list, index_ptr);
@@ -622,15 +622,15 @@ static int iptcc_chain_index_delete_chain(struct chain_head *c, TC_HANDLE_T h)
 		 * is located in the same index bucket.
 		 */
 		c2         = list_entry(next, struct chain_head, list);
-		index_ptr2 = iptcc_bsearch_chain_index(c2->name, &index2, h);
-		if (index != index2) {
+		index_ptr2 = iptcc_bsearch_chain_index(c2->name, &idx2, h);
+		if (idx != idx2) {
 			/* Rebuild needed */
 			return iptcc_chain_index_rebuild(h);
 		} else {
 			/* Avoiding rebuild */
 			debug("Update cindex[%d] with next ptr name:[%s]\n",
-			      index, c2->name);
-			h->chain_index[index]=c2;
+			      idx, c2->name);
+			h->chain_index[idx]=c2;
 			return 0;
 		}
 	}
@@ -2489,16 +2489,14 @@ subtract_counters(STRUCT_COUNTERS *answer,
 }
 
 
-static void counters_nomap(STRUCT_COUNTERS_INFO *newcounters,
-			   unsigned int index)
+static void counters_nomap(STRUCT_COUNTERS_INFO *newcounters, unsigned int idx)
 {
-	newcounters->counters[index] = ((STRUCT_COUNTERS) { 0, 0});
+	newcounters->counters[idx] = ((STRUCT_COUNTERS) { 0, 0});
 	DEBUGP_C("NOMAP => zero\n");
 }
 
 static void counters_normal_map(STRUCT_COUNTERS_INFO *newcounters,
-				STRUCT_REPLACE *repl,
-				unsigned int index,
+				STRUCT_REPLACE *repl, unsigned int idx,
 				unsigned int mappos)
 {
 	/* Original read: X.
@@ -2508,15 +2506,13 @@ static void counters_normal_map(STRUCT_COUNTERS_INFO *newcounters,
 	 * => Add in X + Y
 	 * => Add in replacement read.
 	 */
-	newcounters->counters[index] = repl->counters[mappos];
+	newcounters->counters[idx] = repl->counters[mappos];
 	DEBUGP_C("NORMAL_MAP => mappos %u \n", mappos);
 }
 
 static void counters_map_zeroed(STRUCT_COUNTERS_INFO *newcounters,
-				STRUCT_REPLACE *repl,
-				unsigned int index,
-				unsigned int mappos,
-				STRUCT_COUNTERS *counters)
+				STRUCT_REPLACE *repl, unsigned int idx,
+				unsigned int mappos, STRUCT_COUNTERS *counters)
 {
 	/* Original read: X.
 	 * Atomic read on replacement: X + Y.
@@ -2525,19 +2521,18 @@ static void counters_map_zeroed(STRUCT_COUNTERS_INFO *newcounters,
 	 * => Add in Y.
 	 * => Add in (replacement read - original read).
 	 */
-	subtract_counters(&newcounters->counters[index],
+	subtract_counters(&newcounters->counters[idx],
 			  &repl->counters[mappos],
 			  counters);
 	DEBUGP_C("ZEROED => mappos %u\n", mappos);
 }
 
 static void counters_map_set(STRUCT_COUNTERS_INFO *newcounters,
-			     unsigned int index,
-			     STRUCT_COUNTERS *counters)
+                             unsigned int idx, STRUCT_COUNTERS *counters)
 {
 	/* Want to set counter (iptables-restore) */
 
-	memcpy(&newcounters->counters[index], counters,
+	memcpy(&newcounters->counters[idx], counters,
 		sizeof(STRUCT_COUNTERS));
 
 	DEBUGP_C("SET\n");
