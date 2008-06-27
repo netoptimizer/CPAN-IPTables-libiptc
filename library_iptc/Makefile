@@ -21,7 +21,7 @@ libip4tc.o: libiptc.c
 libip6tc.o: libiptc.c
 
 %.o: %.c
-	$(CC) -o $@ -c $< $(CFLAGS) $(DEFINES)
+	$(CC) -o $@ -c $< $(CFLAGS) $(DEFINES) -fPIC
 
 clean:
 	-$(RM) *.a *.o

@@ -38,7 +38,7 @@ LOCAL_IPTC_OBJ:=../library_iptc/libiptc.a
 LDLIBS=-ldl -lnsl
 
 COPT_FLAGS:=-O2
-CFLAGS:=$(COPT_FLAGS) -Wall -Wunused -I$(KERNEL_DIR)/include -I$(INCDIR) -I../include/
+CFLAGS:=$(COPT_FLAGS) -Wall -Wunused -I$(KERNEL_DIR)/include -I$(INCDIR) -I../include/ -fPIC
 #-g -DDEBUG #-pg # -DIPTC_DEBUG
 
 DEFINES:=-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DIPT_LIB_DIR=\"$(IPT_LIBDIR)\"
