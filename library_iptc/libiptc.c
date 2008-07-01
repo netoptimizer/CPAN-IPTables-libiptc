@@ -54,8 +54,6 @@ static int sockfd = -1;
 static int sockfd_use = 0;
 static void *iptc_fn = NULL;
 
-static int not_sorted_chain_offsets = 0; //FIXME: Move to handle
-
 static const char *hooknames[] = {
 	[HOOK_PRE_ROUTING]	= "PREROUTING",
 	[HOOK_LOCAL_IN]		= "INPUT",
@@ -144,6 +142,11 @@ STRUCT_TC_HANDLE
 
 	struct chain_head **chain_index;   /* array for fast chain list access*/
 	unsigned int        chain_index_sz;/* size of chain index array */
+
+	int sorted_offsets; /* if chains are received sorted from kernel,
+			     * then the offsets are also sorted. Says if its
+			     * possible to bsearch offsets using chain_index.
+			     */
 
 	STRUCT_GETINFO info;
 	STRUCT_GET_ENTRIES *entries;
@@ -448,7 +451,7 @@ iptcc_bsearch_chain_offset(unsigned int offset, unsigned int *idx,
 	/* If chains were not received sorted from kernel, then the
 	 * offset bsearch is not possible.
 	 */
-	if (not_sorted_chain_offsets)
+	if (!handle->sorted_offsets)
 		pos = handle->chains.next;
 	else
 		pos = __iptcc_bsearch_chain_index(NULL, offset, idx, handle,
@@ -916,7 +919,7 @@ static void __iptcc_p_add_chain(TC_HANDLE_T h, struct chain_head *c,
 			 * from kernel, then the offset bsearch is no
 			 * longer valid.
 			 */
-			not_sorted_chain_offsets = 1;
+			h->sorted_offsets = 0;
 
 			debug("WARNING: chain:[%s] was NOT sorted(ctail:%s)\n",
 			      c->name, ctail->name);
@@ -1043,6 +1046,10 @@ static int parse_table(TC_HANDLE_T h)
 	STRUCT_ENTRY *prev;
 	unsigned int num = 0;
 	struct chain_head *c;
+
+	/* Assume that chains offsets are sorted, this verified during
+	   parsing of ruleset (in __iptcc_p_add_chain())*/
+	h->sorted_offsets = 1;
 
 	/* First pass: over ruleset blob */
 	ENTRY_ITERATE(h->entries->entrytable, h->entries->size,
