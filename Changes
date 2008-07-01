@@ -1,8 +1,11 @@
 Revision history for Perl extension IPTables::libiptc.
 
-Recent changes
+0.10  Tue Jul  1 13:38:56 CEST 2008
+
 	- Add a -fPIC option to compile code as "position independent code".
-	  As suggested by Matthew "Cheetah" Gabeler-Lee.
+	  As suggested by Matthew "Cheetah" Gabeler-Lee.  This also
+	  caused problems for CPAN tester reports trying to compile it
+	  on a 64-bit platform.
 
 	- The local libiptc has been updated, to keep it up-to-date
 	  with iptables libiptc 1.4.1, except for the xtables.h
