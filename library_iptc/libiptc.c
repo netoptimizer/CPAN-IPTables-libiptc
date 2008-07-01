@@ -23,6 +23,11 @@
  * 	- libiptc now has a real internal (linked-list) represntation of the
  * 	  ruleset and a parser/compiler from/to this internal representation
  * 	- again sponsored by Astaro AG (http://www.astaro.com/)
+ *
+ * 2008-Jun: Jesper Dangaard Brouer <hawk@diku.dk>
+ * 	- Performance optimization, sponsored by ComX Networks A/S.
+ * 	  Use binary search to speedup ruleset parsing and chain name search.
+ * 	  Thus, making the number of chains scale to above 50000 chains.
  */
 #include <sys/types.h>
 #include <sys/socket.h>
