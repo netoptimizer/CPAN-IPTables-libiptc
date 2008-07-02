@@ -914,8 +914,8 @@ static void __iptcc_p_add_chain(TC_HANDLE_T h, struct chain_head *c,
 	else {
 		ctail = list_entry(tail, struct chain_head, list);
 
-		if (iptcc_is_builtin(ctail) ||
-		    strcmp(c->name, ctail->name) > 0)
+		if (strcmp(c->name, ctail->name) > 0 ||
+		    iptcc_is_builtin(ctail))
 			list_add_tail(&c->list, &h->chains);/* Already sorted*/
 		else {
 			iptc_insert_chain(h, c);/* Was not sorted */
