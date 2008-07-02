@@ -921,12 +921,12 @@ static void __iptcc_p_add_chain(TC_HANDLE_T h, struct chain_head *c,
 			iptc_insert_chain(h, c);/* Was not sorted */
 
 			/* Notice, if chains were not received sorted
-			 * from kernel, then the offset bsearch is no
+			 * from kernel, then an offset bsearch is no
 			 * longer valid.
 			 */
 			h->sorted_offsets = 0;
 
-			debug("WARNING: chain:[%s] was NOT sorted(ctail:%s)\n",
+			debug("NOTICE: chain:[%s] was NOT sorted(ctail:%s)\n",
 			      c->name, ctail->name);
 		}
 	}
