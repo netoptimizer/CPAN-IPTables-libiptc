@@ -1,4 +1,4 @@
-/* Library which manipulates firewall rules.  Version $Revision: 7138 $ */
+/* Library which manipulates firewall rules.  Version $Revision$ */
 
 /* Architecture of firewall rules is as follows:
  *
