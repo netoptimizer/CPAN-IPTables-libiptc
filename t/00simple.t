@@ -2,10 +2,10 @@
 
 use IPTables::libiptc;
 
-#use Test::More tests => 2;
-#BEGIN { $| = 1; print "1..2\n"; }
+# Notice, tests will be skipped if not run as root.
 BEGIN {
     $| = 1; print "1..";
+
     if ($< == 0) { # UID check
 	print "2\n";
     } else {
@@ -15,10 +15,6 @@ BEGIN {
 }
 
 my $testiter = 1;
-
-#if ($< != 0) {
-#    print "0 # Skip Need to be root\n";
-#    }
 
 # TEST: init
 my $table = IPTables::libiptc::init('filter');
