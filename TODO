@@ -1,10 +1,15 @@
 
-
-* Include "interface.pm" perhaps under a different name.
+* Make test cases skip if user not root, to get CPAN testers reports
+  to succeed.
 
 * Submit offset bsearch patch upstream.
 
 * Auto detect iptables version.
+
+* Include "interface.pm" perhaps under a different name.
+
+
+
 
 * Make more test cases.
 
