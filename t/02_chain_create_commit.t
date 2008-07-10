@@ -2,7 +2,17 @@
 
 use IPTables::libiptc;
 
-BEGIN { $| = 1; print "1..3\n"; }
+# Notice, tests will be skipped if not run as root.
+BEGIN {
+    $| = 1; print "1..";
+
+    if ($< == 0) { # UID check
+	print "3\n"; # (number of tests)
+    } else {
+	print "0 # Skip Need to be root\n";
+	exit(0);
+    }
+}
 my $testiter = 1;
 
 # TEST: init

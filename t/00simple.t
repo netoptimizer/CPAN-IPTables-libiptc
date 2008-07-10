@@ -7,7 +7,7 @@ BEGIN {
     $| = 1; print "1..";
 
     if ($< == 0) { # UID check
-	print "2\n";
+	print "2\n"; # (number of tests)
     } else {
 	print "0 # Skip Need to be root\n";
 	exit(0);
