@@ -1,5 +1,11 @@
 Revision history for Perl extension IPTables::libiptc.
 
+0.11  Thu Jul 10 10:22:39 CEST 2008
+
+	- Skip test if not run as root user.  As I cannot make CPAN
+	  tester run 'make test' as root, I simply skip these tests.
+	  Credit goes to Brian D Foy, for the idea.
+
 0.10  Tue Jul  1 13:38:56 CEST 2008
 
 	- Add a -fPIC option to compile code as "position independent code".
