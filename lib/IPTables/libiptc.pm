@@ -116,7 +116,7 @@ on the system.
 The module only exports the libiptc chain manipulation functions.  All
 rule manipulations are done through the iptables.c C<do_command>
 function.  As iptables.c is not made as a library, the package
-unfortunally needs to maintain/contain this C file.
+unfortunately needs to maintain/contain this C file.
 
 =head2 Iptables kernel to userspace design
 
@@ -273,7 +273,7 @@ Jesper Dangaard Brouer, E<lt>hawk@diku.dkE<gt> or E<lt>hawk@people.netfilter.org
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2006 by Jesper Dangaard Brouer
+Copyright (C) 2006-2009 by Jesper Dangaard Brouer
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.4 or,
