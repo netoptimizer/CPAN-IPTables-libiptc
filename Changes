@@ -7,7 +7,10 @@ Revision history for Perl extension IPTables::libiptc.
 	- Use iptables.c command interface from 1.3.6.
 
 	- Backport one of my own mainline bugfixes to chain rename
-	  (uptream commit 64ff47cd, Author: Jesper Dangaard Brouer)
+	  (upstream commit 64ff47cd, Author: Jesper Dangaard Brouer).
+
+	- Backport bugfix "Fix /etc/network usage"
+	  (upstream commit 267a5700, Author: Pablo Neira Ayuso).
 
 
 0.11  Thu Jul 10 10:22:39 CEST 2008
