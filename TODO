@@ -1,9 +1,4 @@
 
-* Make test cases skip if user not root, to get CPAN testers reports
-  to succeed.
-
-* Submit offset bsearch patch upstream.
-
 * Auto detect iptables version.
 
 * Include "interface.pm" perhaps under a different name.
@@ -15,3 +10,12 @@
 
 * Test cases, do a save and restore of original iptables ruleset, to
   avoid fucking-up users iptables rules.
+
+* Update library to new iptables versions
+
+  ** Do several releases to match the versions used by Debian
+
+  ** There migth be issues with the latest release, as libiptc.c has
+     been changed to a dynamic lib libiptc.so, which is the same name
+     I used in Perl.
+
