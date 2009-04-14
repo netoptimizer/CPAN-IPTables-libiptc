@@ -1,4 +1,4 @@
-IPTables-libiptc version 0.09
+IPTables-libiptc version 0.12
 =============================
 
 This package provides a Perl interface to the netfilter/iptables
@@ -33,20 +33,15 @@ This module requires these other modules and libraries:
 The iptables version installed on your system needs to match the
 IPTABLES_VERSION variable this module is compiled with.
 
- Currently depends on iptables/libiptc version 1.3.4, because this
- version contained a chain reference bug.  For this reason, it has
- been necessary to include it in the module and compile libiptc.a our
- self, with this bug fixed. This has been fixed in 1.3.6 by me, but
- this module has not been updated yet.
-
-Thus, to get started using this module quickly, download and install
-iptables version 1.3.4 on your system.
+The IPTABLES_VERSION is currently set to version 1.3.6. Thus, to get
+started using this module quickly, download and install iptables
+version 1.3.6 on your system.
 
 REMEMBER also to do a: 'make install-devel'
 
 Debian hint: "apt-get install iptables-dev" to get libiptc.h.
 
-To use a newer version (that 1.3.4) with this module:
+To use a newer version (than 1.3.6) with this module:
 
  1. From iptables tarball, copy libiptc/libip*.c to library_iptc/
 
@@ -70,17 +65,16 @@ To install this module type the following:
    perl Makefile.PL PREFIX=/usr/local/
    make IPTABLES_LIB_DIR=/usr/local/lib/iptables
    sudo make test
-   make install PREFIX=/usr/local/stow/IPTables-libiptc-0.09
+   make install PREFIX=/usr/local/stow/IPTables-libiptc-0.12
 
    cd /usr/local/stow/
-   stow IPTables-libiptc-0.09
+   stow IPTables-libiptc-0.12
 
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2006 by Jesper Dangaard Brouer <hawk@people.netfilter.org>
+Copyright (C) 2006 by Jesper Dangaard Brouer <hawk@cpan.org>
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.4 or,
 at your option, any later version of Perl 5 you may have available.
-
