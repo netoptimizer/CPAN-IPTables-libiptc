@@ -105,21 +105,13 @@ fast. Several rule changes is committed atomically.
 
 This module is heavily inspired by the CPAN module IPTables-IPv4.  The
 CPAN module IPTables-IPv4 could not be used because it has not been
-keept up-to-date, with the newest iptables extentions.  This is a
-result of the module design, as it contains every extention and thus
+kept up-to-date, with the newest iptables extensions.  This is a
+result of the module design, as it contains every extension and thus
 needs to port them individually.
 
 This package has another approach, it links with the systems libiptc.a
 library and depend on dynamic loading of iptables extensions available
 on the system.
-
-CHANGES: as libiptc.c contained some bugs, it has been necessary to
-include it the module and compile libiptc.a our self.  The module
-still depends on the iptables extensions being available on the
-system. This unfortunatly makes a dependency to iptables version 1.3.4.
-
-NOTE: The bug has been fixed (by me) and included in iptables release
-1.3.6.
 
 The module only exports the libiptc chain manipulation functions.  All
 rule manipulations are done through the iptables.c C<do_command>
@@ -175,7 +167,7 @@ a string containing the reason.
     $success = $table->set_policy('chainname', 'target', 'pkt_cnt', 'byte_cnt');
     ($success, $old_policy, $old_pkt_cnt, $old_pkt_cnt) = $table->set_policy('chainname', 'target');
 
-Sets the default policy.  C<set_policy> can be called severaly ways.
+Sets the default policy.  C<set_policy> can be called several ways.
 Upon success full setting of the policy the old policy and counters
 are returned.  The counter setting values are optional.
 
@@ -228,7 +220,7 @@ Lists all chains.  Returns the number of chains in SCALAR context.
 This function lists the (rules) source or destination IPs from a given
 chain.  The C<type> is either C<src> or C<dst> for source and
 destination IPs.  The netmask is also listed together with the IPs,
-but seperated by a C</> character.  If chainname does not exist
+but separated by a C</> character.  If chainname does not exist
 C<undef> is returned.
 
 
@@ -286,6 +278,5 @@ Copyright (C) 2006 by Jesper Dangaard Brouer
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.8.4 or,
 at your option, any later version of Perl 5 you may have available.
-
 
 =cut
