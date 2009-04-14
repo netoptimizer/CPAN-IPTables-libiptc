@@ -6,7 +6,7 @@ use ExtUtils::MakeMaker;
 
 	sub post_initialize {
 "
-IPTABLES_VERSION:=1.3.4
+IPTABLES_VERSION:=1.3.6
 IPTABLES_LIB_DIR:=/lib/iptables
 LOCAL_LIB_IPTC:=-Llibrary_iptc/
 "
