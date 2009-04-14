@@ -12,6 +12,9 @@ Revision history for Perl extension IPTables::libiptc.
 	- Backport bugfix "Fix /etc/network usage"
 	  (upstream commit 267a5700, Author: Pablo Neira Ayuso).
 
+	- Backport bugfix for rename command line option -E.
+	  (upstream commit 2ac1fada, Author: Krzysztof Piotr Oledzki).
+
 
 0.11  Thu Jul 10 10:22:39 CEST 2008
 
