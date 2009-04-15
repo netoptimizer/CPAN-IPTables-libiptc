@@ -41,6 +41,19 @@
 #include <sys/wait.h>
 #include <sys/utsname.h>
 
+/*
+ * Hack from Alexandre [DOT] Simon (AT) ciril [DOT] fr
+ *
+ * This code is called from Perl, and calling exit() in the C-code
+ * results in the main Perl program exits.  This is very
+ * unfortunately.
+ *
+ * Instead we use setjmp/longjmp to bypass the exit() call.
+ */
+#include <setjmp.h>
+static jmp_buf jmpbuf_stack;
+
+
 #ifndef TRUE
 #define TRUE 1
 #endif
@@ -389,7 +402,9 @@ exit_error(enum exittype status, char *msg, ...)
 			"Perhaps iptables or your kernel needs to be upgraded.\n");
 	/* On error paths, make sure that we don't leak memory */
 	free_opts(1);
-	exit(status);
+	/* bypass exit() ... */
+	longjmp(jmpbuf_stack, 1);
+	exit(status); /* ... so never be there ! */
 }
 
 void
@@ -400,7 +415,9 @@ exit_tryhelp(int status)
 	fprintf(stderr, "Try `%s -h' or '%s --help' for more information.\n",
 			program_name, program_name );
 	free_opts(1);
-	exit(status);
+	/* bypass exit() ... */
+	longjmp(jmpbuf_stack, 1);
+	exit(status); /* ... so never be there ! */
 }
 
 void
@@ -486,7 +503,9 @@ exit_printhelp(struct iptables_rule_match *matches)
 		printf("\n");
 		matchp->match->help();
 	}
-	exit(0);
+	/* bypass exit() ... */
+	longjmp(jmpbuf_stack, 1);
+	exit(0); /* ... so never be there ! */
 }
 
 static void
@@ -1909,7 +1928,9 @@ get_kernel_version(void) {
 	if (uname(&uts) == -1) {
 		fprintf(stderr, "Unable to retrieve kernel version.\n");
 		free_opts(1);
-		exit(1); 
+		/* bypass exit() ... */
+		longjmp(jmpbuf_stack, 1);
+		exit(1); /* ... so never be there ! */
 	}
 
 	sscanf(uts.release, "%d.%d.%d", &x, &y, &z);
@@ -1959,6 +1980,12 @@ int do_command(int argc, char *argv[], char **table, iptc_handle_t *handle)
 	/* Suppress error messages: we may add new options if we
            demand-load a protocol. */
 	opterr = 0;
+
+	/* bypass exit() ... */
+	if(setjmp(jmpbuf_stack)) {
+          ret = 0;
+          goto bypass_exit;
+        }
 
 	while ((c = getopt_long(argc, argv,
 	   "-A:D:R:I:L::M:F::Z::N:X::E:P:Vh::o:p:s:d:j:i:fbvnt:m:xc:g:",
@@ -2589,5 +2616,6 @@ int do_command(int argc, char *argv[], char **table, iptc_handle_t *handle)
 	free(daddrs);
 	free_opts(1);
 
+ bypass_exit:
 	return ret;
 }
