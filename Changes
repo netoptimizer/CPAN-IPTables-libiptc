@@ -1,5 +1,13 @@
 Revision history for Perl extension IPTables::libiptc.
 
+0.13-rc1
+
+	- Work around for exit() problem, by Alexandre Simon.
+	  The C-code in iptables.c calls exit() on all errors, this
+	  results in the Perl program dying.  This is now avoided by a
+	  setjmp/longjmp hack by Alexandre(dot)Simon(at)ciril(dot)fr.
+
+
 0.12  Tue Apr 14 15:11:32 CEST 2009
 
 	- This version is compatible with iptables 1.3.6.
