@@ -5,8 +5,9 @@ use ExtUtils::MakeMaker;
         package MY;
 
 	sub post_initialize {
+	    my $ver = "1.3.6";
 "
-IPTABLES_VERSION:=1.3.6
+IPTABLES_VERSION:=$ver
 IPTABLES_LIB_DIR:=/lib/iptables
 LOCAL_LIB_IPTC:=-Llibrary_iptc/
 "
