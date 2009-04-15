@@ -1,0 +1,481 @@
+From hawk@diku.dk Fri Apr 10 15:37:20 2009
+Received: from lanfw001a.cxnet.dk ([172.31.1.2]) by comxexch02.comx.local
+	with Microsoft SMTPSVC(6.0.3790.3959); Fri, 10 Apr 2009 15:37:20 +0200
+Received: from mgw1.diku.dk (mgw1.diku.dk [130.225.96.91]) by
+	lanfw001a.cxnet.dk (Postfix) with ESMTP id 85D0B16377D for <jdb@comx.dk>;
+	Fri, 10 Apr 2009 15:37:20 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1]) by mgw1.diku.dk (Postfix)
+	with ESMTP id 6CBC352C38A; Fri, 10 Apr 2009 15:37:20 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at diku.dk
+Received: from mgw1.diku.dk ([127.0.0.1]) by localhost (mgw1.diku.dk
+	[127.0.0.1]) (amavisd-new, port 10024) with ESMTP id 0VJObwSvjYlK; Fri, 10
+	Apr 2009 15:37:15 +0200 (CEST)
+Received: from nhugin.diku.dk (nhugin.diku.dk [130.225.96.140]) by
+	mgw1.diku.dk (Postfix) with ESMTP id 115C552C34B; Fri, 10 Apr 2009 15:37:15
+	+0200 (CEST)
+Received: from ask.diku.dk (ask.diku.dk [130.225.96.225]) by nhugin.diku.dk
+	(Postfix) with ESMTP id 8B8046DFAB2; Fri, 10 Apr 2009 15:36:49 +0200 (CEST)
+Received: by ask.diku.dk (Postfix, from userid 3075) id DCB0E2CE462; Fri,
+	10 Apr 2009 15:37:14 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1]) by ask.diku.dk (Postfix)
+	with ESMTP id D91F42CE3FC; Fri, 10 Apr 2009 15:37:14 +0200 (CEST)
+Date: Fri, 10 Apr 2009 15:37:14 +0200 (CEST)
+From: Jesper Dangaard Brouer <hawk@diku.dk>
+To: Alexandre SIMON <Alexandre.Simon@ciril.fr>
+Cc: Jesper Dangaard Brouer <jdb@comx.dk>
+Subject: Re: IPTables::libiptc : some tricks and patches
+In-Reply-To: <49DF0C3C.5080301@ciril.fr>
+Message-ID: <Pine.LNX.4.64.0904101529250.3524@ask.diku.dk>
+References: <49DF0C3C.5080301@ciril.fr>
+MIME-Version: 1.0
+Content-Type: MULTIPART/Mixed; BOUNDARY=------------020806060404060300090202
+Content-ID: <Pine.LNX.4.64.0904101529251.3524@ask.diku.dk>
+Return-Path: hawk@diku.dk
+X-OriginalArrivalTime: 10 Apr 2009 13:37:20.0956 (UTC)
+	FILETIME=[793C87C0:01C9B9E1]
+X-Evolution-Source: exchange://jdb;auth=NTLM@comxexch02.comx.local/
+
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--------------020806060404060300090202
+Content-Type: TEXT/PLAIN; CHARSET=ISO-8859-1; FORMAT=flowed
+Content-ID: <Pine.LNX.4.64.0904101529252.3524@ask.diku.dk>
+Content-Transfer-Encoding: 8bit
+
+
+Hi Alexandre,
+
+Great to hear that you are using my module :-)
+
+I'm currenly on Easter hollidays, so I'm not able to give you feedback 
+until after 14/4 ... but at a quick look it looks very promising :-)
+
+Please use my work email jdb@comx.dk.
+
+Hilsen
+   Jesper Brouer
+
+--
+-------------------------------------------------------------------
+MSc. Master of Computer Science
+Dept. of Computer Science, University of Copenhagen
+Author of http://www.adsl-optimizer.dk
+-------------------------------------------------------------------
+
+
+On Fri, 10 Apr 2009, Alexandre SIMON wrote:
+
+> Dear Jesper,
+>
+>   I'm working on iptables and I need to change rules in perl program.
+>
+>   After some tests with "open3" or "Expect" launching commands line
+> "iptables" or "iptables-restore"... my program is too long : because
+> open3 forks() and Expect uses select(). So I remember your excellent
+> module IPTables::libiptc.
+>
+>   It really seems to suit my problems but after some code I've to make
+> some upgrades and patches. Let's me explain.
+>
+>
+> 1- upgrade iptables.c to version >= 1.4.0
+>
+> We are running our own Linux distribution which uses iptables-1.4.0, so
+> as it's incompatible with 1.3.6 (because of xtables) I need to upgrade
+> IPTables::libiptc to 1.4.0. Here is the changes :
+>
+> cp -av /path_to_sources/iptables-1.4.0/iptables.c iptables/
+> cp -av /path_to_sources/iptables-1.4.0/xtables.c iptables/
+> cp -av /path_to_sources/iptables-1.4.0/iptables-standalone.c iptables/
+> cp -av /path_to_sources/iptables-1.4.0/include/iptables.h include/
+> cp -av /path_to_sources/iptables-1.4.0/include/xtables.h include/
+> cp -av /path_to_sources/iptables-1.4.0/libiptc/*.{c,h} library_iptc/
+> cp -av /path_to_sources/iptables-1.4.0/include/libiptc/libxtc.h
+> include/libiptc/
+>
+> Apply the patch
+> 00-IPTables-libiptc-0.11--compile_with_iptables-1.4.0.patch that makes
+> comme changes in Makefile to deal with "xtables.c,o"
+>
+>
+> 2- bypass exit() call in iptables.c do_command()
+>
+> The problem here is that when we call
+> $table->iptables_do_command(\@array); if we have a syntax error in
+> @array (or something else) the iptables.c do_command() does not return
+> because in child functions there is a call to exit().
+>
+> So I'm sure you understand : call to exit() in iptables.c do_command()
+> makes perl program exit ! without any error...
+>
+> So, I remember some C functions like setjmp/longjmp that can be useful
+> in this case : I modify iptables.c to bypass exit() calls and to permit
+> do_command to return "0" in case of errors.
+>
+> Please see the attached patch
+> 01-IPTables-libiptc-0.11--bypass-exit-call.patch
+>
+>
+> 3- errno (aka $!) is not correctly set in libiptc.xs
+>
+> In fact, it seems that we can not affect "$!" in .xs, instead we have to
+> create a package error variable like IPTables::libiptc::iptc_errno.
+>
+> So now, after a call to $success = $table->..., we have to check error
+> in $IPTables::libiptc::iptc_errno instead of $! that is not properly sets.
+>
+> I've checked in other module, and it seems that they never use $! to set
+> errno and errstr, but instead they use a package error variable.
+>
+> Please see the attached patch
+> 02-IPTables-libiptc-0.11--iptc_errstr-to-perl.patch
+>
+>
+> What do you think about these changes ?
+> I remain available to exchange with you about this and/or to test
+> anything you want.
+> Let's me know.
+>
+> PS: all these changes are in production on our servers, all seems to
+> work correctly.
+>
+>
+>    Best regards,
+>    Alex.
+>
+>
+> -- 
+> Alexandre SIMON
+> Cellule (R)éseau StanNet/Lothaire
+>
+> C.I.R.I.L.            | Perm. réseau : +33 (0)3.83.68.24.24
+> Château du Montet     | Tél.  direct : +33 (0)3.83.68.24.32
+> Rue du Doyen Roubault | Fax          : +33 (0)3.83.68.24.01
+> F - 54500 VANDOEUVRE  | Email        : Alexandre.Simon@ciril.fr
+>
+>
+>
+
+--------------020806060404060300090202
+Content-Type: TEXT/PLAIN; X-MAC-TYPE=0; X-MAC-CREATOR=0; NAME=00-IPTables-libiptc-0.11--compile_with_iptables-1.4.0.patch
+Content-ID: <Pine.LNX.4.64.0904101529253.3524@ask.diku.dk>
+Content-Description: 
+Content-Disposition: INLINE; FILENAME*0=00-IPTables-libiptc-0.11--compile_with_iptables-1.4.0.patch
+Content-Transfer-Encoding: 8bit
+
+diff -ur IPTables-libiptc-0.11.orig/iptables/Makefile IPTables-libiptc-0.11/iptables/Makefile
+--- IPTables-libiptc-0.11.orig/iptables/Makefile	2008-07-10 10:34:33.000000000 +0200
++++ IPTables-libiptc-0.11/iptables/Makefile	2009-04-09 14:52:50.000000000 +0200
+@@ -1,5 +1,5 @@
+ #
+-# Makefile for making a iptables.o file...
++# Makefile for making a iptables.o xtables.o file...
+ #
+ 
+ ifndef KERNEL_DIR
+@@ -7,7 +7,7 @@
+ endif
+ 
+ ifndef IPTABLES_VERSION
+-IPTABLES_VERSION:=1.3.4
++IPTABLES_VERSION:=1.4.0
+ endif
+ 
+ ifndef PREFIX
+@@ -44,15 +44,18 @@
+ DEFINES:=-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DIPT_LIB_DIR=\"$(IPT_LIBDIR)\"
+ default: all
+ 
+-all: iptables.o iptables-standalone iptables-blocking
++all: iptables.o xtables.o iptables-standalone iptables-blocking
+ 
+ iptables.o: iptables.c Makefile
+ 	$(CC) $(CFLAGS) -c -o $@ $<
+ 
+-iptables-standalone: iptables-standalone.c iptables.o
++xtables.o: xtables.c Makefile
++	$(CC) $(CFLAGS) -c -o $@ $<
++
++iptables-standalone: iptables-standalone.c iptables.o xtables.o
+ 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LOCAL_IPTC_OBJ) $(LDLIBS)
+ 
+-iptables-blocking: iptables-blocking.c iptables.o
++iptables-blocking: iptables-blocking.c iptables.o xtables.o
+ 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LOCAL_IPTC_OBJ) $(LDLIBS)
+ 
+ install:
+diff -ur IPTables-libiptc-0.11.orig/Makefile.PL IPTables-libiptc-0.11/Makefile.PL
+--- IPTables-libiptc-0.11.orig/Makefile.PL	2008-07-10 10:34:33.000000000 +0200
++++ IPTables-libiptc-0.11/Makefile.PL	2009-04-09 14:50:46.000000000 +0200
+@@ -6,7 +6,7 @@
+ 
+ 	sub post_initialize {
+ "
+-IPTABLES_VERSION:=1.3.4
++IPTABLES_VERSION:=1.4.0
+ IPTABLES_LIB_DIR:=/lib/iptables
+ LOCAL_LIB_IPTC:=-Llibrary_iptc/
+ "
+@@ -50,7 +50,7 @@
+                          # e.g., '-I. -I/usr/include/other'
+     # Un-comment this if you add C files to link with later:
+     # OBJECT            => '$(O_FILES)', # link all the C files too
+-    OBJECT            => '$(O_FILES) iptables/iptables.o library_iptc/libiptc.a',
++    OBJECT            => '$(O_FILES) iptables/iptables.o iptables/xtables.o library_iptc/libiptc.a',
+                       # link all the C files too
+     PREFIX            => '/usr/local',
+     TYPEMAPS          => ['libiptc.typemap'],
+
+
+--------------020806060404060300090202
+Content-Type: TEXT/PLAIN; X-MAC-TYPE=0; X-MAC-CREATOR=0; NAME=01-IPTables-libiptc-0.11--bypass-exit-call.patch
+Content-ID: <Pine.LNX.4.64.0904101529254.3524@ask.diku.dk>
+Content-Description: 
+Content-Disposition: INLINE; FILENAME=01-IPTables-libiptc-0.11--bypass-exit-call.patch
+Content-Transfer-Encoding: 8bit
+
+diff -ru IPTables-libiptc-0.11.orig/iptables/iptables.c IPTables-libiptc-0.11/iptables/iptables.c
+--- IPTables-libiptc-0.11.orig/iptables/iptables.c	2007-12-22 13:44:18.000000000 +0100
++++ IPTables-libiptc-0.11/iptables/iptables.c	2009-04-09 16:24:23.000000000 +0200
+@@ -40,6 +40,16 @@
+ #include <fcntl.h>
+ #include <sys/utsname.h>
+ 
++/*
++ * Let's use setjmp/longjmp to bypass exit() call...
++ * ... as exit() in perl module IPTables::libiptc (in libiptc.so) makes
++ * the main program exit !
++ * Original idea from Alexandre [DOT] Simon (AT) ciril [DOT] fr
++ */
++#include <setjmp.h>
++static jmp_buf jmpbuf_stack;
++
++
+ #ifndef TRUE
+ #define TRUE 1
+ #endif
+@@ -355,7 +365,9 @@
+ 	fprintf(stderr, "Try `%s -h' or '%s --help' for more information.\n",
+ 			program_name, program_name );
+ 	free_opts(1);
+-	exit(status);
++	/* bypass exit() ... */
++	longjmp(jmpbuf_stack, 1);
++	exit(status); /* ... so never be there ! */
+ }
+ 
+ static void
+@@ -441,7 +453,9 @@
+ 		printf("\n");
+ 		matchp->match->help();
+ 	}
+-	exit(0);
++	/* bypass exit() ... */
++	longjmp(jmpbuf_stack, 1);
++	exit(0); /* ... so never be there ! */
+ }
+ 
+ void
+@@ -461,7 +475,9 @@
+ 			"Perhaps iptables or your kernel needs to be upgraded.\n");
+ 	/* On error paths, make sure that we don't leak memory */
+ 	free_opts(1);
+-	exit(status);
++	/* bypass exit() ... */
++	longjmp(jmpbuf_stack, 1);
++	exit(status); /* ... so never be there ! */
+ }
+ 
+ static void
+@@ -1440,7 +1456,9 @@
+ 	if (uname(&uts) == -1) {
+ 		fprintf(stderr, "Unable to retrieve kernel version.\n");
+ 		free_opts(1);
+-		exit(1); 
++		/* bypass exit() ... */
++		longjmp(jmpbuf_stack, 1);
++		exit(1); /* ... so never be there ! */
+ 	}
+ 
+ 	sscanf(uts.release, "%d.%d.%d", &x, &y, &z);
+@@ -1491,6 +1509,12 @@
+            demand-load a protocol. */
+ 	opterr = 0;
+ 
++	/* bypass exit() ... */
++	if(setjmp(jmpbuf_stack)) {
++          ret = 0;
++          goto bypass_exit;
++        }
++
+ 	while ((c = getopt_long(argc, argv,
+ 	   "-A:D:R:I:L::M:F::Z::N:X::E:P:Vh::o:p:s:d:j:i:fbvnt:m:xc:g:",
+ 					   opts, NULL)) != -1) {
+@@ -2122,5 +2146,6 @@
+ 	free(daddrs);
+ 	free_opts(1);
+ 
++ bypass_exit:
+ 	return ret;
+ }
+
+
+--------------020806060404060300090202
+Content-Type: TEXT/PLAIN; X-MAC-TYPE=0; X-MAC-CREATOR=0; NAME=02-IPTables-libiptc-0.11--iptc_errstr-to-perl.patch
+Content-ID: <Pine.LNX.4.64.0904101529255.3524@ask.diku.dk>
+Content-Description: 
+Content-Disposition: INLINE; FILENAME=02-IPTables-libiptc-0.11--iptc_errstr-to-perl.patch
+Content-Transfer-Encoding: 8bit
+
+diff -ru IPTables-libiptc-0.11.orig/iptables/iptables.c IPTables-libiptc-0.11/iptables/iptables.c
+--- IPTables-libiptc-0.11.orig/iptables/iptables.c	2009-04-09 16:24:23.000000000 +0200
++++ IPTables-libiptc-0.11/iptables/iptables.c	2009-04-09 16:30:52.000000000 +0200
+@@ -49,6 +49,14 @@
+ #include <setjmp.h>
+ static jmp_buf jmpbuf_stack;
+ 
++/*
++ * Let's return to perl iptables / iptc error
++ */
++#ifndef IPTC_ERRSTR_LENGTH
++#define IPTC_ERRSTR_LENGTH 1024
++#endif
++static char iptc_errstr[IPTC_ERRSTR_LENGTH];
++
+ 
+ #ifndef TRUE
+ #define TRUE 1
+@@ -360,10 +368,12 @@
+ static void
+ exit_tryhelp(int status)
+ {
++	/* Comment printf to stderr, as in perl module we do not need this.
+ 	if (line != -1)
+ 		fprintf(stderr, "Error occurred at line: %d\n", line);
+ 	fprintf(stderr, "Try `%s -h' or '%s --help' for more information.\n",
+ 			program_name, program_name );
++	*/
+ 	free_opts(1);
+ 	/* bypass exit() ... */
+ 	longjmp(jmpbuf_stack, 1);
+@@ -464,15 +474,20 @@
+ 	va_list args;
+ 
+ 	va_start(args, msg);
++	/* Comment printf to stderr, as in perl module we do not need this.
+ 	fprintf(stderr, "%s v%s: ", program_name, program_version);
+ 	vfprintf(stderr, msg, args);
++	*/
++	vsnprintf(iptc_errstr, IPTC_ERRSTR_LENGTH-1, msg, args);
+ 	va_end(args);
+-	fprintf(stderr, "\n");
++	/*fprintf(stderr, "\n");*/
+ 	if (status == PARAMETER_PROBLEM)
+ 		exit_tryhelp(status);
+ 	if (status == VERSION_PROBLEM)
++	  /* Comment printf to stderr, as in perl module we do not need this.
+ 		fprintf(stderr,
+ 			"Perhaps iptables or your kernel needs to be upgraded.\n");
++	  */
+ 	/* On error paths, make sure that we don't leak memory */
+ 	free_opts(1);
+ 	/* bypass exit() ... */
+@@ -1454,7 +1469,10 @@
+ 	int x = 0, y = 0, z = 0;
+ 
+ 	if (uname(&uts) == -1) {
++	  	/* Comment printf to stderr, as in perl module we do not need this.
+ 		fprintf(stderr, "Unable to retrieve kernel version.\n");
++		*/
++		snprintf(iptc_errstr, IPTC_ERRSTR_LENGTH, "%s", "Unable to retrieve kernel version");
+ 		free_opts(1);
+ 		/* bypass exit() ... */
+ 		longjmp(jmpbuf_stack, 1);
+@@ -1509,6 +1527,11 @@
+            demand-load a protocol. */
+ 	opterr = 0;
+ 
++	/*
++	 * init return to perl iptables / iptc error
++	 */
++	memset(iptc_errstr, 0, IPTC_ERRSTR_LENGTH);
++
+ 	/* bypass exit() ... */
+ 	if(setjmp(jmpbuf_stack)) {
+           ret = 0;
+@@ -2149,3 +2172,27 @@
+  bypass_exit:
+ 	return ret;
+ }
++
++
++/*
++ * Let's return to perl iptables / iptc error
++ */
++char *
++get_iptc_errstr(void) {
++
++  /* replace '\n' by ' ' */
++  int i;
++  for(i=0; i<strlen(iptc_errstr); i++) {
++    if(iptc_errstr[i] == '\n') {
++      iptc_errstr[i] = ' ';
++    }
++  }
++  
++  /* replace trailing ' ' by NULL */
++  if((strlen(iptc_errstr)>0) && (iptc_errstr[strlen(iptc_errstr)-1] == ' ')) {
++    iptc_errstr[strlen(iptc_errstr)-1] = NULL;
++  }
++
++  /* return */
++  return iptc_errstr;
++}
+diff -ru IPTables-libiptc-0.11.orig/lib/IPTables/libiptc.pm IPTables-libiptc-0.11/lib/IPTables/libiptc.pm
+--- IPTables-libiptc-0.11.orig/lib/IPTables/libiptc.pm	2008-07-10 10:34:33.000000000 +0200
++++ IPTables-libiptc-0.11/lib/IPTables/libiptc.pm	2009-04-09 16:30:47.000000000 +0200
+@@ -34,15 +34,18 @@
+ # will save memory.
+ our %EXPORT_TAGS = ( 'all' => [ qw(
+ 	IPT_MIN_ALIGN
++	iptc_errno
+ ) ] );
+ 
+ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
+ 
+ our @EXPORT = qw(
+ 	IPT_MIN_ALIGN
++	iptc_errno
+ );
+ 
+ our $VERSION = '0.11';
++our $iptc_errno;
+ 
+ sub AUTOLOAD {
+     # This AUTOLOAD is used to 'autoload' constants from the constant()
+diff -ru IPTables-libiptc-0.11.orig/libiptc.xs IPTables-libiptc-0.11/libiptc.xs
+--- IPTables-libiptc-0.11.orig/libiptc.xs	2008-07-10 10:34:33.000000000 +0200
++++ IPTables-libiptc-0.11/libiptc.xs	2009-04-09 16:30:47.000000000 +0200
+@@ -11,7 +11,7 @@
+ 
+ #include "const-c.inc"
+ 
+-#define ERROR_SV perl_get_sv("!", 0)
++#define ERROR_SV perl_get_sv("IPTables::libiptc::iptc_errno", FALSE)
+ #define SET_ERRSTR(format...) sv_setpvf(ERROR_SV, ##format)
+ #define SET_ERRNUM(value) sv_setiv(ERROR_SV, (IV)value)
+ 
+@@ -462,6 +462,9 @@
+ 	if (!RETVAL) {
+ 	    SET_ERRNUM(errno);
+ 	    SET_ERRSTR("%s", iptc_strerror(errno));
++	    if(!errno) {
++	        SET_ERRSTR("%s", get_iptc_errstr());
++	    }
+ 	    SvIOK_on(ERROR_SV);
+ 	}
+ 	if ( fake_table[0] ) {
+
+
+--------------020806060404060300090202--

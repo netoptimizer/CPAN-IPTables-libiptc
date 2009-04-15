@@ -1,0 +1,34 @@
+commit 64ff47cde38e48b621883947fd61b9b1357f9451
+Author: Jesper Dangaard Brouer <hawk@comx.dk>
+Date:   Mon Mar 23 14:25:49 2009 +0100
+
+    libiptc: fix chain rename bug in libiptc
+    
+    Chain renaming (TC_RENAME_CHAIN) can result in an unsorted
+    chain list.  That breaks the requirement of the binary search
+    done in iptcc_bsearch_chain_index().
+    
+    Signed-off-by: Jesper Dangaard Brouer <hawk@comx.dk>
+    Signed-off-by: Patrick McHardy <kaber@trash.net>
+
+diff --git a/libiptc/libiptc.c b/libiptc/libiptc.c
+index c3d9bfc..6b3a1fb 100644
+--- a/libiptc/libiptc.c
++++ b/libiptc/libiptc.c
+@@ -2404,8 +2404,15 @@ int TC_RENAME_CHAIN(const IPT_CHAINLABEL oldname,
+ 		return 0;
+ 	}
+ 
++	/* This only unlinks "c" from the list, thus no free(c) */
++	iptcc_chain_index_delete_chain(c, handle);
++
++	/* Change the name of the chain */
+ 	strncpy(c->name, newname, sizeof(IPT_CHAINLABEL));
+-	
++
++	/* Insert sorted into to list again */
++	iptc_insert_chain(handle, c);
++
+ 	set_changed(handle);
+ 
+ 	return 1;

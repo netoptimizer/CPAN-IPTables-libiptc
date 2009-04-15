@@ -1,0 +1,63 @@
+diff -ur IPTables-libiptc-0.11.orig/iptables/Makefile IPTables-libiptc-0.11/iptables/Makefile
+--- IPTables-libiptc-0.11.orig/iptables/Makefile	2008-07-10 10:34:33.000000000 +0200
++++ IPTables-libiptc-0.11/iptables/Makefile	2009-04-09 14:52:50.000000000 +0200
+@@ -1,5 +1,5 @@
+ #
+-# Makefile for making a iptables.o file...
++# Makefile for making a iptables.o xtables.o file...
+ #
+ 
+ ifndef KERNEL_DIR
+@@ -7,7 +7,7 @@
+ endif
+ 
+ ifndef IPTABLES_VERSION
+-IPTABLES_VERSION:=1.3.4
++IPTABLES_VERSION:=1.4.0
+ endif
+ 
+ ifndef PREFIX
+@@ -44,15 +44,18 @@
+ DEFINES:=-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DIPT_LIB_DIR=\"$(IPT_LIBDIR)\"
+ default: all
+ 
+-all: iptables.o iptables-standalone iptables-blocking
++all: iptables.o xtables.o iptables-standalone iptables-blocking
+ 
+ iptables.o: iptables.c Makefile
+ 	$(CC) $(CFLAGS) -c -o $@ $<
+ 
+-iptables-standalone: iptables-standalone.c iptables.o
++xtables.o: xtables.c Makefile
++	$(CC) $(CFLAGS) -c -o $@ $<
++
++iptables-standalone: iptables-standalone.c iptables.o xtables.o
+ 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LOCAL_IPTC_OBJ) $(LDLIBS)
+ 
+-iptables-blocking: iptables-blocking.c iptables.o
++iptables-blocking: iptables-blocking.c iptables.o xtables.o
+ 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LOCAL_IPTC_OBJ) $(LDLIBS)
+ 
+ install:
+diff -ur IPTables-libiptc-0.11.orig/Makefile.PL IPTables-libiptc-0.11/Makefile.PL
+--- IPTables-libiptc-0.11.orig/Makefile.PL	2008-07-10 10:34:33.000000000 +0200
++++ IPTables-libiptc-0.11/Makefile.PL	2009-04-09 14:50:46.000000000 +0200
+@@ -6,7 +6,7 @@
+ 
+ 	sub post_initialize {
+ "
+-IPTABLES_VERSION:=1.3.4
++IPTABLES_VERSION:=1.4.0
+ IPTABLES_LIB_DIR:=/lib/iptables
+ LOCAL_LIB_IPTC:=-Llibrary_iptc/
+ "
+@@ -50,7 +50,7 @@
+                          # e.g., '-I. -I/usr/include/other'
+     # Un-comment this if you add C files to link with later:
+     # OBJECT            => '$(O_FILES)', # link all the C files too
+-    OBJECT            => '$(O_FILES) iptables/iptables.o library_iptc/libiptc.a',
++    OBJECT            => '$(O_FILES) iptables/iptables.o iptables/xtables.o library_iptc/libiptc.a',
+                       # link all the C files too
+     PREFIX            => '/usr/local',
+     TYPEMAPS          => ['libiptc.typemap'],
+

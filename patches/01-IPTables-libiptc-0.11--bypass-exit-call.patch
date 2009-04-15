@@ -1,0 +1,85 @@
+diff -ru IPTables-libiptc-0.11.orig/iptables/iptables.c IPTables-libiptc-0.11/iptables/iptables.c
+--- IPTables-libiptc-0.11.orig/iptables/iptables.c	2007-12-22 13:44:18.000000000 +0100
++++ IPTables-libiptc-0.11/iptables/iptables.c	2009-04-09 16:24:23.000000000 +0200
+@@ -40,6 +40,16 @@
+ #include <fcntl.h>
+ #include <sys/utsname.h>
+ 
++/*
++ * Let's use setjmp/longjmp to bypass exit() call...
++ * ... as exit() in perl module IPTables::libiptc (in libiptc.so) makes
++ * the main program exit !
++ * Original idea from Alexandre [DOT] Simon (AT) ciril [DOT] fr
++ */
++#include <setjmp.h>
++static jmp_buf jmpbuf_stack;
++
++
+ #ifndef TRUE
+ #define TRUE 1
+ #endif
+@@ -355,7 +365,9 @@
+ 	fprintf(stderr, "Try `%s -h' or '%s --help' for more information.\n",
+ 			program_name, program_name );
+ 	free_opts(1);
+-	exit(status);
++	/* bypass exit() ... */
++	longjmp(jmpbuf_stack, 1);
++	exit(status); /* ... so never be there ! */
+ }
+ 
+ static void
+@@ -441,7 +453,9 @@
+ 		printf("\n");
+ 		matchp->match->help();
+ 	}
+-	exit(0);
++	/* bypass exit() ... */
++	longjmp(jmpbuf_stack, 1);
++	exit(0); /* ... so never be there ! */
+ }
+ 
+ void
+@@ -461,7 +475,9 @@
+ 			"Perhaps iptables or your kernel needs to be upgraded.\n");
+ 	/* On error paths, make sure that we don't leak memory */
+ 	free_opts(1);
+-	exit(status);
++	/* bypass exit() ... */
++	longjmp(jmpbuf_stack, 1);
++	exit(status); /* ... so never be there ! */
+ }
+ 
+ static void
+@@ -1440,7 +1456,9 @@
+ 	if (uname(&uts) == -1) {
+ 		fprintf(stderr, "Unable to retrieve kernel version.\n");
+ 		free_opts(1);
+-		exit(1); 
++		/* bypass exit() ... */
++		longjmp(jmpbuf_stack, 1);
++		exit(1); /* ... so never be there ! */
+ 	}
+ 
+ 	sscanf(uts.release, "%d.%d.%d", &x, &y, &z);
+@@ -1491,6 +1509,12 @@
+            demand-load a protocol. */
+ 	opterr = 0;
+ 
++	/* bypass exit() ... */
++	if(setjmp(jmpbuf_stack)) {
++          ret = 0;
++          goto bypass_exit;
++        }
++
+ 	while ((c = getopt_long(argc, argv,
+ 	   "-A:D:R:I:L::M:F::Z::N:X::E:P:Vh::o:p:s:d:j:i:fbvnt:m:xc:g:",
+ 					   opts, NULL)) != -1) {
+@@ -2122,5 +2146,6 @@
+ 	free(daddrs);
+ 	free_opts(1);
+ 
++ bypass_exit:
+ 	return ret;
+ }
+

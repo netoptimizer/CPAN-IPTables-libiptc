@@ -1,0 +1,38 @@
+commit 2ac1fadaf8a2915c1c0ac66c98edc2f36f8df4ed
+Author: Krzysztof Piotr Oledzki <ole@ans.pl>
+Date:   Tue Nov 14 07:50:54 2006 +0000
+
+    Fix -E (rename) in iptables/ip6tables
+    
+    Remove ununsed CHECK entry in commands_v_options.
+    
+    It makes -E (rename) working again - generic_opt_check
+    expects options for RENAME not for CHECK at that table index.
+    
+    Signed-off-by: Krzysztof Piotr Oledzki <ole@ans.pl>
+    Signed-off-by: Patrick McHardy <kaber@trash.net>
+
+diff --git a/ip6tables.c b/ip6tables.c
+index 8bb7661..9b1370a 100644
+--- a/ip6tables.c
++++ b/ip6tables.c
+@@ -170,7 +170,6 @@ static char commands_v_options[NUMBER_OF_CMD][NUMBER_OF_OPT] =
+ /*NEW_CHAIN*/ {'x','x','x','x','x',' ','x','x','x','x','x'},
+ /*DEL_CHAIN*/ {'x','x','x','x','x',' ','x','x','x','x','x'},
+ /*SET_POLICY*/{'x','x','x','x','x',' ','x','x','x','x','x'},
+-/*CHECK*/     {'x','+','+','+','x',' ','x',' ',' ','x','x'},
+ /*RENAME*/    {'x','x','x','x','x',' ','x','x','x','x','x'}
+ };
+ 
+diff --git a/iptables.c b/iptables.c
+index b627d3a..610e96d 100644
+--- a/iptables.c
++++ b/iptables.c
+@@ -171,7 +171,6 @@ static char commands_v_options[NUMBER_OF_CMD][NUMBER_OF_OPT] =
+ /*NEW_CHAIN*/ {'x','x','x','x','x',' ','x','x','x','x','x','x'},
+ /*DEL_CHAIN*/ {'x','x','x','x','x',' ','x','x','x','x','x','x'},
+ /*SET_POLICY*/{'x','x','x','x','x',' ','x','x','x','x','x','x'},
+-/*CHECK*/     {'x','+','+','+','x',' ','x',' ',' ',' ','x','x'},
+ /*RENAME*/    {'x','x','x','x','x',' ','x','x','x','x','x','x'}
+ };
+ 

@@ -1,0 +1,166 @@
+commit 267a57007e69d8f316dea80f79ce2560459e0c30
+Author: Pablo Neira Ayuso <pablo@netfilter.org>
+Date:   Wed Nov 29 13:32:32 2006 +0000
+
+    Fix /etc/network usage (Pablo Neira)
+    
+    http://bugs.debian.org/398082
+    
+    iptables 1.3.5 and 1.3.6 appear to read /etc/networks, but the
+    information is lost somewhere with 1.3.6.
+    
+     # cat /etc/networks
+     foonet 10.0.0.0
+    
+     # strace -s 255 -o /tmp/foo iptables -v -A INPUT -s foonet/8 -j
+    ACCEPT #1.3.5 [1]
+     ACCEPT  all opt -- in * out *  10.0.0.0/8  -> 0.0.0.0/0
+    
+     # strace -s 255 -o /tmp/bar iptables -v -A INPUT -s foonet/8 -j
+    ACCEPT #1.3.6 [2]
+     iptables v1.3.6: host/network `foonet.0.0.0' not found
+     Try `iptables -h' or 'iptables --help' for more information.
+    
+    1. http://people.debian.org/~ljlane/stuff/strace-iptables-1.3.5.txt
+    2. http://people.debian.org/~ljlane/stuff/strace-iptables-1.3.6.txt
+
+diff --git a/extensions/libipt_NETMAP.c b/extensions/libipt_NETMAP.c
+index a39c731..8cecb4d 100644
+--- a/extensions/libipt_NETMAP.c
++++ b/extensions/libipt_NETMAP.c
+@@ -86,7 +86,7 @@ parse_to(char *arg, struct ip_nat_range *range)
+ 	range->min_ip = ip->s_addr;
+ 	if (slash) {
+ 		if (strchr(slash+1, '.')) {
+-			ip = dotted_to_addr(slash+1);
++			ip = dotted_to_mask(slash+1);
+ 			if (!ip)
+ 				exit_error(PARAMETER_PROBLEM, "Bad netmask `%s'\n",
+ 					   slash+1);
+diff --git a/include/iptables.h b/include/iptables.h
+index ba27cac..6b3b956 100644
+--- a/include/iptables.h
++++ b/include/iptables.h
+@@ -154,6 +154,7 @@ extern void register_target(struct iptables_target *me);
+ extern int service_to_port(const char *name, const char *proto);
+ extern u_int16_t parse_port(const char *port, const char *proto);
+ extern struct in_addr *dotted_to_addr(const char *dotted);
++extern struct in_addr *dotted_to_mask(const char *dotted);
+ extern char *addr_to_dotted(const struct in_addr *addrp);
+ extern char *addr_to_anyname(const struct in_addr *addr);
+ extern char *mask_to_dotted(const struct in_addr *mask);
+diff --git a/iptables.c b/iptables.c
+index 610e96d..7d8771d 100644
+--- a/iptables.c
++++ b/iptables.c
+@@ -275,8 +275,13 @@ parse_port(const char *port, const char *proto)
+ 		   "invalid port/service `%s' specified", port);
+ }
+ 
+-struct in_addr *
+-dotted_to_addr(const char *dotted)
++enum {
++	IPT_DOTTED_ADDR = 0,
++	IPT_DOTTED_MASK
++};
++
++static struct in_addr *
++__dotted_to_addr(const char *dotted, int type)
+ {
+ 	static struct in_addr addr;
+ 	unsigned char *addrp;
+@@ -292,8 +297,20 @@ dotted_to_addr(const char *dotted)
+ 
+ 	p = buf;
+ 	for (i = 0; i < 3; i++) {
+-		if ((q = strchr(p, '.')) == NULL)
+-			return (struct in_addr *) NULL;
++		if ((q = strchr(p, '.')) == NULL) {
++			if (type == IPT_DOTTED_ADDR) {
++				/* autocomplete, this is a network address */
++				if (string_to_number(p, 0, 255, &onebyte) == -1)
++					return (struct in_addr *) NULL;
++
++				addrp[i] = (unsigned char) onebyte;
++				while (i < 3)
++					addrp[++i] = 0;
++
++				return &addr;
++			} else
++				return (struct in_addr *) NULL;
++		}
+ 
+ 		*q = '\0';
+ 		if (string_to_number(p, 0, 255, &onebyte) == -1)
+@@ -312,6 +329,18 @@ dotted_to_addr(const char *dotted)
+ 	return &addr;
+ }
+ 
++struct in_addr *
++dotted_to_addr(const char *dotted)
++{
++	return __dotted_to_addr(dotted, IPT_DOTTED_ADDR);
++}
++
++struct in_addr *
++dotted_to_mask(const char *dotted)
++{
++	return __dotted_to_addr(dotted, IPT_DOTTED_MASK);
++}
++
+ static struct in_addr *
+ network_to_addr(const char *name)
+ {
+@@ -609,34 +638,6 @@ addr_to_host(const struct in_addr *addr)
+ 	return (char *) NULL;
+ }
+ 
+-static void 
+-pad_cidr(char *cidr)
+-{
+-	char *p, *q;
+-	unsigned int onebyte;
+-	int i, j;
+-	char buf[20];
+-
+-	/* copy dotted string, because we need to modify it */
+-	strncpy(buf, cidr, sizeof(buf) - 1);
+-	buf[sizeof(buf) - 1] = '\0';
+-
+-	p = buf;
+-	for (i = 0; i <= 3; i++) {
+-		if ((q = strchr(p, '.')) == NULL)
+-			break;
+-		*q = '\0';
+-		if (string_to_number(p, 0, 255, &onebyte) == -1)
+-			return;
+-		p = q + 1;
+-	}
+-
+-	/* pad remaining octets with zeros */
+-	for (j = i; j < 3; j++) {
+-		strcat(cidr, ".0");
+-	}
+-}
+-
+ /*
+  *	All functions starting with "parse" should succeed, otherwise
+  *	the program fails.
+@@ -676,7 +677,7 @@ parse_mask(char *mask)
+ 		maskaddr.s_addr = 0xFFFFFFFF;
+ 		return &maskaddr;
+ 	}
+-	if ((addrp = dotted_to_addr(mask)) != NULL)
++	if ((addrp = dotted_to_mask(mask)) != NULL)
+ 		/* dotted_to_addr already returns a network byte order addr */
+ 		return addrp;
+ 	if (string_to_number(mask, 0, 32, &bits) == -1)
+@@ -705,8 +706,6 @@ parse_hostnetworkmask(const char *name, struct in_addr **addrpp,
+ 	if ((p = strrchr(buf, '/')) != NULL) {
+ 		*p = '\0';
+ 		addrp = parse_mask(p + 1);
+-		if (strrchr(p + 1, '.') == NULL)
+-			pad_cidr(buf);
+ 	} else
+ 		addrp = parse_mask(NULL);
+ 	inaddrcpy(maskp, addrp);

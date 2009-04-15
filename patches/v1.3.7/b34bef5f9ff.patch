@@ -1,0 +1,20 @@
+commit b34bef5f9ff4ee20cd46df1e26f6d6efe0bb5380
+Author: Patrick McHardy <kaber@trash.net>
+Date:   Mon Oct 9 18:00:11 2006 +0000
+
+    Add endian annotation types to fix compilation for kernels > 2.6.18
+
+diff --git a/include/iptables_common.h b/include/iptables_common.h
+index e214d1f..05516ac 100644
+--- a/include/iptables_common.h
++++ b/include/iptables_common.h
+@@ -42,4 +42,9 @@ extern char *lib_dir;
+   extern void init_extensions(void);
+ #endif
+ 
++#define __be32	u_int32_t
++#define __le32	u_int32_t
++#define __be16	u_int16_t
++#define __le16	u_int16_t
++
+ #endif /*_IPTABLES_COMMON_H*/

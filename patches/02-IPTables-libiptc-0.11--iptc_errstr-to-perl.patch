@@ -1,0 +1,149 @@
+diff -ru IPTables-libiptc-0.11.orig/iptables/iptables.c IPTables-libiptc-0.11/iptables/iptables.c
+--- IPTables-libiptc-0.11.orig/iptables/iptables.c	2009-04-09 16:24:23.000000000 +0200
++++ IPTables-libiptc-0.11/iptables/iptables.c	2009-04-09 16:30:52.000000000 +0200
+@@ -49,6 +49,14 @@
+ #include <setjmp.h>
+ static jmp_buf jmpbuf_stack;
+ 
++/*
++ * Let's return to perl iptables / iptc error
++ */
++#ifndef IPTC_ERRSTR_LENGTH
++#define IPTC_ERRSTR_LENGTH 1024
++#endif
++static char iptc_errstr[IPTC_ERRSTR_LENGTH];
++
+ 
+ #ifndef TRUE
+ #define TRUE 1
+@@ -360,10 +368,12 @@
+ static void
+ exit_tryhelp(int status)
+ {
++	/* Comment printf to stderr, as in perl module we do not need this.
+ 	if (line != -1)
+ 		fprintf(stderr, "Error occurred at line: %d\n", line);
+ 	fprintf(stderr, "Try `%s -h' or '%s --help' for more information.\n",
+ 			program_name, program_name );
++	*/
+ 	free_opts(1);
+ 	/* bypass exit() ... */
+ 	longjmp(jmpbuf_stack, 1);
+@@ -464,15 +474,20 @@
+ 	va_list args;
+ 
+ 	va_start(args, msg);
++	/* Comment printf to stderr, as in perl module we do not need this.
+ 	fprintf(stderr, "%s v%s: ", program_name, program_version);
+ 	vfprintf(stderr, msg, args);
++	*/
++	vsnprintf(iptc_errstr, IPTC_ERRSTR_LENGTH-1, msg, args);
+ 	va_end(args);
+-	fprintf(stderr, "\n");
++	/*fprintf(stderr, "\n");*/
+ 	if (status == PARAMETER_PROBLEM)
+ 		exit_tryhelp(status);
+ 	if (status == VERSION_PROBLEM)
++	  /* Comment printf to stderr, as in perl module we do not need this.
+ 		fprintf(stderr,
+ 			"Perhaps iptables or your kernel needs to be upgraded.\n");
++	  */
+ 	/* On error paths, make sure that we don't leak memory */
+ 	free_opts(1);
+ 	/* bypass exit() ... */
+@@ -1454,7 +1469,10 @@
+ 	int x = 0, y = 0, z = 0;
+ 
+ 	if (uname(&uts) == -1) {
++	  	/* Comment printf to stderr, as in perl module we do not need this.
+ 		fprintf(stderr, "Unable to retrieve kernel version.\n");
++		*/
++		snprintf(iptc_errstr, IPTC_ERRSTR_LENGTH, "%s", "Unable to retrieve kernel version");
+ 		free_opts(1);
+ 		/* bypass exit() ... */
+ 		longjmp(jmpbuf_stack, 1);
+@@ -1509,6 +1527,11 @@
+            demand-load a protocol. */
+ 	opterr = 0;
+ 
++	/*
++	 * init return to perl iptables / iptc error
++	 */
++	memset(iptc_errstr, 0, IPTC_ERRSTR_LENGTH);
++
+ 	/* bypass exit() ... */
+ 	if(setjmp(jmpbuf_stack)) {
+           ret = 0;
+@@ -2149,3 +2172,27 @@
+  bypass_exit:
+ 	return ret;
+ }
++
++
++/*
++ * Let's return to perl iptables / iptc error
++ */
++char *
++get_iptc_errstr(void) {
++
++  /* replace '\n' by ' ' */
++  int i;
++  for(i=0; i<strlen(iptc_errstr); i++) {
++    if(iptc_errstr[i] == '\n') {
++      iptc_errstr[i] = ' ';
++    }
++  }
++  
++  /* replace trailing ' ' by NULL */
++  if((strlen(iptc_errstr)>0) && (iptc_errstr[strlen(iptc_errstr)-1] == ' ')) {
++    iptc_errstr[strlen(iptc_errstr)-1] = NULL;
++  }
++
++  /* return */
++  return iptc_errstr;
++}
+diff -ru IPTables-libiptc-0.11.orig/lib/IPTables/libiptc.pm IPTables-libiptc-0.11/lib/IPTables/libiptc.pm
+--- IPTables-libiptc-0.11.orig/lib/IPTables/libiptc.pm	2008-07-10 10:34:33.000000000 +0200
++++ IPTables-libiptc-0.11/lib/IPTables/libiptc.pm	2009-04-09 16:30:47.000000000 +0200
+@@ -34,15 +34,18 @@
+ # will save memory.
+ our %EXPORT_TAGS = ( 'all' => [ qw(
+ 	IPT_MIN_ALIGN
++	iptc_errno
+ ) ] );
+ 
+ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
+ 
+ our @EXPORT = qw(
+ 	IPT_MIN_ALIGN
++	iptc_errno
+ );
+ 
+ our $VERSION = '0.11';
++our $iptc_errno;
+ 
+ sub AUTOLOAD {
+     # This AUTOLOAD is used to 'autoload' constants from the constant()
+diff -ru IPTables-libiptc-0.11.orig/libiptc.xs IPTables-libiptc-0.11/libiptc.xs
+--- IPTables-libiptc-0.11.orig/libiptc.xs	2008-07-10 10:34:33.000000000 +0200
++++ IPTables-libiptc-0.11/libiptc.xs	2009-04-09 16:30:47.000000000 +0200
+@@ -11,7 +11,7 @@
+ 
+ #include "const-c.inc"
+ 
+-#define ERROR_SV perl_get_sv("!", 0)
++#define ERROR_SV perl_get_sv("IPTables::libiptc::iptc_errno", FALSE)
+ #define SET_ERRSTR(format...) sv_setpvf(ERROR_SV, ##format)
+ #define SET_ERRNUM(value) sv_setiv(ERROR_SV, (IV)value)
+ 
+@@ -462,6 +462,9 @@
+ 	if (!RETVAL) {
+ 	    SET_ERRNUM(errno);
+ 	    SET_ERRSTR("%s", iptc_strerror(errno));
++	    if(!errno) {
++	        SET_ERRSTR("%s", get_iptc_errstr());
++	    }
+ 	    SvIOK_on(ERROR_SV);
+ 	}
+ 	if ( fake_table[0] ) {
+

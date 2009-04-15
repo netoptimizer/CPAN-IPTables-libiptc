@@ -19,3 +19,5 @@
      been changed to a dynamic lib libiptc.so, which is the same name
      I used in Perl.
 
+* Apply patches from Alexandre Simon <Alexandre.Simon@ciril.fr>
+
