@@ -1,6 +1,6 @@
 Revision history for Perl extension IPTables::libiptc.
 
-0.13-rc1
+0.13  Wed Apr 15 14:59:42 CEST 2009
 
 	- Work around for exit() problem, by Alexandre Simon.
 	  The C-code in iptables.c calls exit() on all errors, this
