@@ -209,6 +209,9 @@ char *lib_dir;
 
 int kernel_version;
 
+/* the path to command to load kernel module */
+const char *modprobe = NULL;
+
 /* Keeping track of external matches and targets: linked lists.  */
 struct iptables_match *iptables_matches = NULL;
 struct iptables_target *iptables_targets = NULL;
@@ -237,11 +240,12 @@ struct pprot {
 static const struct pprot chain_protos[] = {
 	{ "tcp", IPPROTO_TCP },
 	{ "udp", IPPROTO_UDP },
+	{ "udplite", IPPROTO_UDPLITE },
 	{ "icmp", IPPROTO_ICMP },
 	{ "esp", IPPROTO_ESP },
 	{ "ah", IPPROTO_AH },
 	{ "sctp", IPPROTO_SCTP },
-	{ "all", IPPROTO_IP },
+	{ "all", 0 },
 };
 
 static char *
@@ -903,7 +907,7 @@ void parse_interface(const char *arg, char *vianame, unsigned char *mask)
 			if (vianame[i] == ':' ||
 			    vianame[i] == '!' ||
 			    vianame[i] == '*') {
-				printf("Warning: wierd character in interface"
+				printf("Warning: weird character in interface"
 				       " `%s' (No aliases, :, ! or *).\n",
 				       vianame);
 				break;
@@ -1164,6 +1168,8 @@ static int compatible_revision(const char *name, u_int8_t revision, int opt)
 			strerror(errno));
 		exit(1);
 	}
+
+	load_iptables_ko(modprobe, 1);
 
 	strcpy(rev.name, name);
 	rev.revision = revision;
@@ -1827,10 +1833,10 @@ static char *get_modprobe(void)
 	return NULL;
 }
 
-int iptables_insmod(const char *modname, const char *modprobe)
+int iptables_insmod(const char *modname, const char *modprobe, int quiet)
 {
 	char *buf = NULL;
-	char *argv[3];
+	char *argv[4];
 	int status;
 
 	/* If they don't explicitly set it, read out of kernel */
@@ -1845,7 +1851,13 @@ int iptables_insmod(const char *modname, const char *modprobe)
 	case 0:
 		argv[0] = (char *)modprobe;
 		argv[1] = (char *)modname;
-		argv[2] = NULL;
+		if (quiet) {
+			argv[2] = "-q";
+			argv[3] = NULL;
+		} else {
+			argv[2] = NULL;
+			argv[3] = NULL;
+		}
 		execv(argv[0], argv);
 
 		/* not usually reached */
@@ -1861,6 +1873,19 @@ int iptables_insmod(const char *modname, const char *modprobe)
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
 		return 0;
 	return -1;
+}
+
+int load_iptables_ko(const char *modprobe, int quiet)
+{
+	static int loaded = 0;
+	static int ret = -1;
+
+	if (!loaded) {
+		ret = iptables_insmod("ip_tables", modprobe, quiet);
+		loaded = (ret == 0);
+	}
+
+	return ret;
 }
 
 static struct ipt_entry *
@@ -1958,7 +1983,6 @@ int do_command(int argc, char *argv[], char **table, iptc_handle_t *handle)
 	struct iptables_target *t;
 	const char *jumpto = "";
 	char *protocol = NULL;
-	const char *modprobe = NULL;
 	int proto_used = 0;
 
 	memset(&fw, 0, sizeof(fw));
@@ -2452,7 +2476,7 @@ int do_command(int argc, char *argv[], char **table, iptc_handle_t *handle)
 		*handle = iptc_init(*table);
 
 	/* try to insmod the module if iptc_init failed */
-	if (!*handle && iptables_insmod("ip_tables", modprobe) != -1)
+	if (!*handle && load_iptables_ko(modprobe, 0) != -1)
 		*handle = iptc_init(*table);
 
 	if (!*handle)

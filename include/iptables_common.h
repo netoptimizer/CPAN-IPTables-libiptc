@@ -27,7 +27,9 @@ extern int string_to_number_ll(const char *,
 			    unsigned long long int, 
 			    unsigned long long int,
 			    unsigned long long *);
-extern int iptables_insmod(const char *modname, const char *modprobe);
+extern int
+iptables_insmod(const char *modname, const char *modprobe, int quiet);
+extern int load_iptables_ko(const char *modprobe, int quiet);
 void exit_error(enum exittype, char *, ...)__attribute__((noreturn,
 							  format(printf,2,3)));
 extern const char *program_name, *program_version;
@@ -41,5 +43,10 @@ extern char *lib_dir;
 # endif
   extern void init_extensions(void);
 #endif
+
+#define __be32	u_int32_t
+#define __le32	u_int32_t
+#define __be16	u_int16_t
+#define __le16	u_int16_t
 
 #endif /*_IPTABLES_COMMON_H*/
