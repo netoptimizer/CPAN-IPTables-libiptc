@@ -1,5 +1,12 @@
 Revision history for Perl extension IPTables::libiptc.
 
+0.14  Thu Apr 16 11:37:16 CEST 2009
+
+	- This version is up-to-date with iptables 1.3.8.
+
+	- Should be compatible with all iptables 1.3.x versions.
+
+
 0.13  Wed Apr 15 14:59:42 CEST 2009
 
 	- Work around for exit() problem, by Alexandre Simon.
