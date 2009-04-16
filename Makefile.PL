@@ -4,8 +4,70 @@ use ExtUtils::MakeMaker;
 {
         package MY;
 
+	sub exec_iptables($) {
+	    my $cmd = shift;
+	    my $exitcode;
+	    print "Detect iptables version via command: \"$cmd\"\n";
+
+	    my $output = `$cmd 2>&1`;
+	    if ($? == -1) {
+		# Cannot execute the command
+		print(" WARN: Cannot execute the command:$cmd (err:$!)\n");
+		$exitcode=-1;
+	    } else {
+		# The exit code is in the high byte of the 16-bit status word
+		$exitcode = $? >> 8;
+	    }
+	    return ($exitcode, $output);
+	}
+
+	sub detect_iptables_version($) {
+	    my $default_version = shift;
+	    my $ver = $default_version;
+	    my $cmd = "iptables -V";
+	    my $exitcode;
+
+	    ($exitcode, $output) = exec_iptables("iptables -V");
+	    ($exitcode, $output) = exec_iptables("/usr/local/sbin/iptables -V")
+		if ($exitcode == -1);
+	    ($exitcode, $output) = exec_iptables("/sbin/iptables -V")
+		if ($exitcode == -1);
+
+	    if ($exitcode>0) {
+		print STDERR ("WARN: Err running command:\"$cmd\" (err:$!)\n");
+		print STDERR ("WARN: Cannot auto-detect iptables version\n");
+	    } else {
+		chomp $output;
+		#print "Matching on output:[$output]\n";
+		if ($output =~ /iptables v(\d+)\.(\d+)\.(\d+)/) {
+		    my $major    = $1;
+		    my $minor    = $2;
+		    my $revision = $3;
+		    $ver="$major.$minor.$revision";
+		    print "Detected iptables version: $major.$minor.$revision\n";
+		    if ($major > 1) {
+			print "Too high major version, fallback\n";
+			$ver = $default_version;
+		    }
+
+		    if ($minor > 3) {
+			print "Module only supports version 1.3.x, fallback\n";
+			$ver = $default_version
+		    }
+
+		    if ($minor < 3) {
+			print "Version below 1.3.x, good luck\n";
+		    }
+		}
+	    }
+	    print("Using iptables version: $ver\n");
+	    return $ver;
+	}
+
 	sub post_initialize {
-	    my $ver = "1.3.8";
+	    my $default_version = "1.3.8";
+	    my $ver = detect_iptables_version($default_version);
+
 "
 IPTABLES_VERSION:=$ver
 IPTABLES_LIB_DIR:=/lib/iptables
