@@ -1,4 +1,4 @@
-IPTables-libiptc version 0.12
+IPTables-libiptc version 0.14
 =============================
 
 This package provides a Perl interface to the netfilter/iptables
@@ -9,8 +9,8 @@ fast. Several rule changes is committed atomically.
 
 This module is heavily inspired by the CPAN module IPTables-IPv4.  The
 CPAN module IPTables-IPv4 could not be used because it has not been
-keept up-to-date, with the newest iptables extentions.  This is a
-result of the module design, as it contains every extention and thus
+kept up-to-date, with the newest iptables extentions.  This is a
+result of the module design, as it contains every extension and thus
 needs to port them individually.
 
 This package has another approach, it links with the systems libiptc.a
@@ -19,8 +19,9 @@ on the system.
 
 This design limits us to only export the libiptc chain manipulation
 functions.  All rule manipulations are done through the iptables.c
-"do_command" function. (As iptables.c is not made as a library, the
-package unfortunally needs to maintain/contain this C file).
+"do_command" function. (As iptables.c is not made as a library, below
+iptables version 1.4.3, the package unfortunately needs to
+maintain/contain this C file).
 
 
 DEPENDENCIES
@@ -30,24 +31,13 @@ This module requires these other modules and libraries:
  iptables
  libiptc.a
 
-The iptables version installed on your system needs to match the
-IPTABLES_VERSION variable this module is compiled with.
+The iptables version installed on your system is auto-detected during
+generation of the Makefile.PL file.  This sets the IPTABLES_VERSION
+variable as it needs to match the .so extentions available on you
+system.
 
-The IPTABLES_VERSION is currently set to version 1.3.6. Thus, to get
-started using this module quickly, download and install iptables
-version 1.3.6 on your system.
-
-REMEMBER also to do a: 'make install-devel'
-
-Debian hint: "apt-get install iptables-dev" to get libiptc.h.
-
-To use a newer version (than 1.3.6) with this module:
-
- 1. From iptables tarball, copy libiptc/libip*.c to library_iptc/
-
- 2. Copy iptables.c to iptables/
-
- 3. Change the variable IPTABLES_VERSION in Makefile.PL
+This release only supports the iptables versions 1.3.x.  The default
+fallback IPTABLES_VERSION is currently set to version 1.3.8.
 
 
 INSTALLATION
@@ -65,10 +55,10 @@ To install this module type the following:
    perl Makefile.PL PREFIX=/usr/local/
    make IPTABLES_LIB_DIR=/usr/local/lib/iptables
    sudo make test
-   make install PREFIX=/usr/local/stow/IPTables-libiptc-0.12
+   make install PREFIX=/usr/local/stow/IPTables-libiptc-0.14
 
    cd /usr/local/stow/
-   stow IPTables-libiptc-0.12
+   stow IPTables-libiptc-0.14
 
 
 COPYRIGHT AND LICENCE
