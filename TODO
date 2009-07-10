@@ -1,6 +1,4 @@
 
-* Auto detect iptables version.
-
 * Include "interface.pm" perhaps under a different name.
 
 
