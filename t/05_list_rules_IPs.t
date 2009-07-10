@@ -28,7 +28,8 @@ $testiter++;
 
 my $chainname = "FORWARD";
 # TEST: list rules IPs()
-if(! $table->list_rules_IPs('src', "$chainname")) {
+my $a = $table->list_rules_IPs('src', "$chainname");
+if(!defined($a)) {
  print STDERR "$!\n";
  print "not ";
 }
