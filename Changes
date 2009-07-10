@@ -1,5 +1,7 @@
 Revision history for Perl extension IPTables::libiptc.
 
+0.15  Fri Jul 10 11:58:47 CEST 2009
+
 	- Problem with list_rules_IPs() on 64-bit platforms.
 	  Fixed by Colm Dougan <colm.dougan(at)replify(dot)com>
 
