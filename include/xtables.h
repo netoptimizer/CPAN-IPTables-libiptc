@@ -17,17 +17,33 @@
 #define IPPROTO_UDPLITE	136
 #endif
 
-#define XTABLES_VERSION IPTABLES_VERSION
-#define XTABLES_VERSION_CODE (0x10000 * 1 + 0x100 * 4 + 1)
+/* Hawk: Trying to handle ABI segfault bug */
+
+#define XTABLES_VERSION      IPTABLES_VERSION
+#define XTABLES_VERSION_CODE IPTABLES_VERSION_CODE
 
 #define XTABLES_API_VERSION(x,y,z)    (0x10000*(x) + 0x100*(y) + z)
+
+#ifndef IPTABLES_VERSION_CODE
+#error "IPTABLES version code not available"
+#else
+#define DETECTED_VERSION_CODE IPTABLES_VERSION_CODE
+#endif
 
 /* Include file for additions: new matches and targets. */
 struct xtables_match
 {
 	struct xtables_match *next;
 
+#if DETECTED_VERSION_CODE <= XTABLES_API_VERSION(1,4,1)
 	xt_chainlabel name;
+#elif DETECTED_VERSION_CODE == XTABLES_API_VERSION(1,4,2)
+#warning "Trying to avoid segfaults on version 1.4.2"
+	const char *name;
+#else
+#warning "Versions above 1.4.2 are unlikely to work due to ABI changes"
+	const char *name;
+#endif
 
 	/* Revision of match (0 by default). */
 	u_int8_t revision;
@@ -83,7 +99,13 @@ struct xtables_target
 {
 	struct xtables_target *next;
 
+#if DETECTED_VERSION_CODE <= XTABLES_API_VERSION(1,4,1)
 	xt_chainlabel name;
+#elif DETECTED_VERSION_CODE == XTABLES_API_VERSION(1,4,2)
+	const char *name;
+#else
+	const char *name;
+#endif
 
 	/* Revision of target (0 by default). */
 	u_int8_t revision;
