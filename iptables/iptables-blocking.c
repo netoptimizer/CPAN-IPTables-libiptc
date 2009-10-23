@@ -38,6 +38,9 @@
 #include <iptables.h>
 #include "iptables-multi.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <sys/file.h>
 
 #define LOCK_FILE "/var/lock/iptables_cmd_lock"
@@ -72,7 +75,7 @@ main(int argc, char *argv[])
 	init_extensions();
 #endif
 
-	fd = open(LOCK_FILE, O_CREAT|O_WRONLY|O_TRUNC);
+	fd = open(LOCK_FILE, O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU|S_IRGRP);
 	if (fd < 0) {
 		fprintf(stderr, "iptables: Cannot open lock file %s (strerr:%s)\n",
 			LOCK_FILE, strerror(errno));
