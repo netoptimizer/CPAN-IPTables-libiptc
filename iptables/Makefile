@@ -3,7 +3,9 @@
 #
 
 ifndef KERNEL_DIR
-KERNEL_DIR=/usr/src/linux
+# KERNEL_DIR=/usr/src/linux
+# Point to /lib/modules/`uname -r`/build
+KERNEL_DIR = /lib/modules/$(shell uname -r)/build
 endif
 
 ifndef IPTABLES_VERSION
