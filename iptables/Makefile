@@ -7,7 +7,7 @@ KERNEL_DIR=/usr/src/linux
 endif
 
 ifndef IPTABLES_VERSION
-IPTABLES_VERSION:=1.3.4
+IPTABLES_VERSION:=1.4.4
 endif
 
 ifndef PREFIX
@@ -38,21 +38,24 @@ LOCAL_IPTC_OBJ:=../library_iptc/libiptc.a
 LDLIBS=-ldl -lnsl
 
 COPT_FLAGS:=-O2
-CFLAGS:=$(COPT_FLAGS) -Wall -Wunused -I$(KERNEL_DIR)/include -I$(INCDIR) -I../include/ -fPIC
+CFLAGS:=$(COPT_FLAGS) -Wall -Wunused -I$(KERNEL_DIR)/include -I$(INCDIR) -I../include/ -fPIC -DXTABLES_INTERNAL
 #-g -DDEBUG #-pg # -DIPTC_DEBUG
 
-DEFINES:=-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DIPT_LIB_DIR=\"$(IPT_LIBDIR)\"
+DEFINES:=-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DXTABLES_LIBDIR=\"$(XTABLES_LIBDIR)\"
 default: all
 
-all: iptables.o iptables-standalone iptables-blocking
+all: iptables.o xtables.o iptables-standalone iptables-blocking
 
 iptables.o: iptables.c Makefile
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(DEFINES) -c -o $@ $<
 
-iptables-standalone: iptables-standalone.c iptables.o
+xtables.o: xtables.c Makefile
+	$(CC) $(CFLAGS) $(DEFINES) -c -o $@ $<
+
+iptables-standalone: iptables-standalone.c iptables.o xtables.o
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LOCAL_IPTC_OBJ) $(LDLIBS)
 
-iptables-blocking: iptables-blocking.c iptables.o
+iptables-blocking: iptables-blocking.c iptables.o xtables.o
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LOCAL_IPTC_OBJ) $(LDLIBS)
 
 install:
