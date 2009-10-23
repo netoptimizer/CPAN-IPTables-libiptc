@@ -1,6 +1,6 @@
 Revision history for Perl extension IPTables::libiptc.
 
-0.17-rc1  Fri Oct 23 12:29:22 CEST 2009
+0.17	Fri Oct 23 17:21:23 CEST 2009
 
 	- This version is only compatible with iptables 1.4.1.
 
