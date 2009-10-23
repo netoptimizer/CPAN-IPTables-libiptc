@@ -18,21 +18,41 @@
 #endif
 
 /* Hawk: Trying to handle ABI segfault bug */
-
-#define XTABLES_VERSION      IPTABLES_VERSION
-#define XTABLES_VERSION_CODE IPTABLES_VERSION_CODE
-
-#define XTABLES_API_VERSION(x,y,z)    (0x10000*(x) + 0x100*(y) + z)
-
 #ifndef IPTABLES_VERSION_CODE
 #error "IPTABLES version code not available"
 #else
 #define DETECTED_VERSION_CODE IPTABLES_VERSION_CODE
 #endif
 
+
+#define XTABLES_API_VERSION(x,y,z)    (0x10000*(x) + 0x100*(y) + z)
+
+
+#if   DETECTED_VERSION_CODE == XTABLES_API_VERSION(1,4,3)
+#define XTABLES_VERSION "libxtables.so.1"
+#define XTABLES_VERSION_CODE 1
+#elif DETECTED_VERSION_CODE >= XTABLES_API_VERSION(1,4,4)
+#define XTABLES_VERSION "libxtables.so.2"
+#define XTABLES_VERSION_CODE 2
+#else
+#define XTABLES_VERSION      IPTABLES_VERSION
+#define XTABLES_VERSION_CODE IPTABLES_VERSION_CODE
+#endif
+
+
 /* Include file for additions: new matches and targets. */
 struct xtables_match
 {
+
+#if DETECTED_VERSION_CODE >= XTABLES_API_VERSION(1,4,3)
+#warning "Versions 1.4.3.2 or above have the version pointer first"
+        /*
+         * ABI/API version this module requires. Must be first member,
+         * as the rest of this struct may be subject to ABI changes.
+         */
+        const char *version;
+#endif
+
 	struct xtables_match *next;
 
 #if DETECTED_VERSION_CODE <= XTABLES_API_VERSION(1,4,1)
@@ -50,7 +70,11 @@ struct xtables_match
 
 	u_int16_t family;
 
+
+#if DETECTED_VERSION_CODE < XTABLES_API_VERSION(1,4,3)
+#warning "Trying to avoid segfaults, the version pointer moved..."
 	const char *version;
+#endif
 
 	/* Size of match data. */
 	size_t size;
