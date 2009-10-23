@@ -40,6 +40,19 @@ This release only supports the iptables versions 1.3.x.  The default
 fallback IPTABLES_VERSION is currently set to version 1.3.8.
 
 
+BUGS
+
+There are some segfault issues when comparing the IPTABLES_VERSION
+variable (in the dynamic loadable modules) between iptables versions,
+1.4.1 and 1.4.2, and also between 1.4.2 and 1.4.3.  It has been fixed
+from version 1.4.3.2 and beyond (see git commit c4edfa63eda06)
+
+Its related to "include/xtables.h" (structs xtables_match and
+xtables_target, and location of the "version" element).  Thus, you can
+avoid this issue by using the include file "include/xtables.h" from
+the appropiate version.
+
+
 INSTALLATION
 
 Notice this module depends on iptables dynamic loadable libraries,
