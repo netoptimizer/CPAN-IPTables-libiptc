@@ -36,6 +36,7 @@
 #include <errno.h>
 #include <string.h>
 #include <iptables.h>
+#include "iptables-multi.h"
 
 #ifdef IPTABLES_MULTI
 int
@@ -50,11 +51,16 @@ main(int argc, char *argv[])
 	iptc_handle_t handle = NULL;
 
 	program_name = "iptables";
-	program_version = IPTABLES_VERSION;
+	program_version = XTABLES_VERSION;
 
-	lib_dir = getenv("IPTABLES_LIB_DIR");
-	if (!lib_dir)
-		lib_dir = IPT_LIB_DIR;
+	lib_dir = getenv("XTABLES_LIBDIR");
+	if (lib_dir == NULL) {
+		lib_dir = getenv("IPTABLES_LIB_DIR");
+		if (lib_dir != NULL)
+			fprintf(stderr, "IPTABLES_LIB_DIR is deprecated\n");
+	}
+	if (lib_dir == NULL)
+		lib_dir = XTABLES_LIBDIR;
 
 #ifdef NO_SHARED_LIBS
 	init_extensions();
