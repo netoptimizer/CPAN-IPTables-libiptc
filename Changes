@@ -1,5 +1,19 @@
 Revision history for Perl extension IPTables::libiptc.
 
+0.17-rc1  Fri Oct 23 12:29:22 CEST 2009
+
+	- This version is only compatible with iptables 1.4.1.
+
+	- Its not compatible with 1.4.2 and 1.4.3, because there are
+	  some segfault issues when comparing the IPTABLES_VERSION
+	  variable (in the dynamic loadable modules) between iptables
+	  versions, 1.4.1 and 1.4.2, and also between 1.4.2 and 1.4.3.
+	  It has been fixed from version 1.4.3.2 and beyond (see
+	  iptables upstream git commit c4edfa63eda06).
+
+	- This is the first version to support iptables 1.4.x, more
+	  will be created shortly, for supporting 1.4.2 and 1.4.3.
+
 0.15  Fri Jul 10 11:58:47 CEST 2009
 
 	- Problem with list_rules_IPs() on 64-bit platforms.
