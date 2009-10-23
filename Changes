@@ -14,10 +14,16 @@ Revision history for Perl extension IPTables::libiptc.
 	- This is the first version to support iptables 1.4.x, more
 	  will be created shortly, for supporting 1.4.2 and 1.4.3.
 
+	- This version also removes the work around for exit()
+	  problem, done in release 0.13.  Its still a problem, but
+	  its too intrusive to the iptables.c code.
+
+
 0.15  Fri Jul 10 11:58:47 CEST 2009
 
 	- Problem with list_rules_IPs() on 64-bit platforms.
 	  Fixed by Colm Dougan <colm.dougan(at)replify(dot)com>
+
 
 0.14  Thu Apr 16 11:37:16 CEST 2009
 
