@@ -28,6 +28,7 @@ library_iptc/libiptc.c
 library_iptc/Makefile
 include/linux_list.h
 include/linux_stddef.h
+include/linux/types.h
 
 t/IPTables-libiptc.t
 t/00simple.t
