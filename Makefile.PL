@@ -63,6 +63,24 @@ use ExtUtils::MakeMaker;
 		    if ($minor < 4) {
 			print "Version below 1.4.x, good luck\n";
 		    }
+
+		    if ($minor == 4 && $revision != 1) {
+			print "\n";
+			print "-=-=-=- WARNING of segfaults!!! -=-=-=-\n";
+			print "\n";
+			print " This perl module release only supports iptables\n";
+			print "  version ${default_version}\n";
+			print "\n";
+			print " There are some segfault issues when comparing the IPTABLES_VERSION\n";
+			print " variable (in the dynamic loadable modules) between iptables versions\n";
+			print " 1.4.1 and 1.4.2, and also between 1.4.2 and 1.4.3. It has been fixed\n";
+			print " from version 1.4.3.2 and beyond (see git commit c4edfa63eda06)\n";
+			print "\n";
+			print " If your system provides the correct xtables.h header file, there is\n";
+			print " a good chance it will work anyhow.  You have been warned!\n";
+			print "\n";
+		    }
+
 		}
 	    }
 	    print("Using iptables version: $ver\n");
@@ -70,7 +88,7 @@ use ExtUtils::MakeMaker;
 	}
 
 	sub post_initialize {
-	    my $default_version = "1.4.4";
+	    my $default_version = "1.4.1";
 	    my ($ver, $xtables_libdir) = detect_iptables_version($default_version);
 
 "
