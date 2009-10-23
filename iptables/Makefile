@@ -7,7 +7,7 @@ KERNEL_DIR=/usr/src/linux
 endif
 
 ifndef IPTABLES_VERSION
-IPTABLES_VERSION:=1.4.4
+IPTABLES_VERSION:=1.4.1
 endif
 
 ifndef PREFIX
