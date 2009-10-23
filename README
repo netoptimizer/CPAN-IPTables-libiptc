@@ -1,4 +1,4 @@
-IPTables-libiptc version 0.14
+IPTables-libiptc version 0.17
 =============================
 
 This package provides a Perl interface to the netfilter/iptables
@@ -57,21 +57,21 @@ INSTALLATION
 
 Notice this module depends on iptables dynamic loadable libraries,
 thus it needs to know the path to them (default assumes they are
-located in /lib/iptables).  The iptables path for dynamic loading
+located in /lib/xtables).  The iptables path for dynamic loading
 (where the libipt_*.so files are located) can be altered by setting
-the variable IPTABLES_LIB_DIR while calling make.  This can also be
+the variable XTABLES_LIBDIR while calling make.  This can also be
 changed later at runtime setting the environment variable
 IPTABLES_LIB_DIR.
 
 To install this module type the following:
 
    perl Makefile.PL PREFIX=/usr/local/
-   make IPTABLES_LIB_DIR=/usr/local/lib/iptables
+   make XTABLES_LIBDIR=/usr/local/libexec/xtables
    sudo make test
-   make install PREFIX=/usr/local/stow/IPTables-libiptc-0.14
+   make install PREFIX=/usr/local/stow/IPTables-libiptc-0.17
 
    cd /usr/local/stow/
-   stow IPTables-libiptc-0.14
+   stow IPTables-libiptc-0.17
 
 
 COPYRIGHT AND LICENCE
