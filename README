@@ -36,8 +36,8 @@ generation of the Makefile.PL file.  This sets the IPTABLES_VERSION
 variable as it needs to match the .so extentions available on you
 system.
 
-This release only supports the iptables versions 1.3.x.  The default
-fallback IPTABLES_VERSION is currently set to version 1.3.8.
+This release only supports the iptables versions 1.4.1.  The default
+fallback IPTABLES_VERSION is currently set to version 1.4.1.
 
 
 BUGS
