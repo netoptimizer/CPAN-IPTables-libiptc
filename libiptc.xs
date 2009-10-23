@@ -281,13 +281,13 @@ list_rules_IPs(self, type, chain)
 
 		    switch (the_type) {
 		    case 'd':
-			sprintf(buf,"%s",(char*)addr_to_dotted(&(entry->ip.dst)));
-			strcat(buf, (char*) mask_to_dotted(&(entry->ip.dmsk)));
+			sprintf(buf,"%s",ipaddr_to_numeric(&(entry->ip.dst)));
+			strcat(buf, ipmask_to_numeric(&(entry->ip.dmsk)));
 			sv = newSVpv(buf, 0);
 		        break;
 		    case 's':
-			sprintf(buf,"%s",(char*)addr_to_dotted(&(entry->ip.src)));
-			strcat(buf, (char*) mask_to_dotted(&(entry->ip.smsk)));
+			sprintf(buf,"%s",ipaddr_to_numeric(&(entry->ip.src)));
+			strcat(buf, ipmask_to_numeric(&(entry->ip.smsk)));
 			sv = newSVpv(buf, 0);
 		        break;
 		    default:
