@@ -9,6 +9,7 @@ README
 include/libiptc/libiptc.h
 include/libiptc/libip6tc.h
 include/libiptc/ipt_kernel_headers.h
+include/libiptc/libxtc.h
 
 iptables/iptables.c
 iptables/xtables.c
