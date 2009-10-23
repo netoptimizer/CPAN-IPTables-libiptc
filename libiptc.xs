@@ -5,7 +5,8 @@
 #include "ppport.h"
 
 #include <libiptc/libiptc.h>
-#include <include/iptables.h>
+#include <xtables.h>
+#include <iptables.h>
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
