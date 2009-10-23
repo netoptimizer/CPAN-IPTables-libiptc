@@ -42,7 +42,7 @@ our @EXPORT = qw(
 	IPT_MIN_ALIGN
 );
 
-our $VERSION = '0.17-rc2';
+our $VERSION = '0.17-rc3';
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
