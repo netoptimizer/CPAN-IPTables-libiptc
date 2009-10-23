@@ -17,7 +17,7 @@
 #define IPPROTO_UDPLITE	136
 #endif
 
-#define XTABLES_VERSION "1.4.1.1"
+#define XTABLES_VERSION IPTABLES_VERSION
 #define XTABLES_VERSION_CODE (0x10000 * 1 + 0x100 * 4 + 1)
 
 #define XTABLES_API_VERSION(x,y,z)    (0x10000*(x) + 0x100*(y) + z)
