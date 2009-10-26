@@ -72,7 +72,7 @@ struct xtables_match
 
 
 #if DETECTED_VERSION_CODE < XTABLES_API_VERSION(1,4,3)
-#warning "Trying to avoid segfaults, the version pointer moved..."
+#warning "Trying to avoid segfaults, version pointer old position"
 	const char *version;
 #endif
 
@@ -121,6 +121,15 @@ struct xtables_match
 
 struct xtables_target
 {
+#if DETECTED_VERSION_CODE >= XTABLES_API_VERSION(1,4,3)
+#warning "Versions 1.4.3.2 or above have the version pointer first"
+        /*
+         * ABI/API version this module requires. Must be first member,
+         * as the rest of this struct may be subject to ABI changes.
+         */
+        const char *version;
+#endif
+
 	struct xtables_target *next;
 
 #if DETECTED_VERSION_CODE <= XTABLES_API_VERSION(1,4,1)
@@ -136,7 +145,10 @@ struct xtables_target
 
 	u_int16_t family;
 
+#if DETECTED_VERSION_CODE < XTABLES_API_VERSION(1,4,3)
+#warning "Trying to avoid segfaults, version pointer old position"
 	const char *version;
+#endif
 
 	/* Size of target data. */
 	size_t size;
