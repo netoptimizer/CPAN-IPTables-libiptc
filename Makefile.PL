@@ -60,11 +60,11 @@ use ExtUtils::MakeMaker;
 		    my $revision = $3;
 		    my $extra    = $4;
 		    $ver="$major.$minor.$revision";
-		    if (defined $extra) {
+		    if ( $extra =~ m/\d+/ ) {
 			$ver = $ver . "." . ${extra};
 		    }
 		    $vercode=xtables_api_version($major,$minor,$revision);
-		    print "Detected iptables version: $major.$minor.$revision (vercode:$vercode)\n";
+		    print "Detected iptables version: $ver (vercode:$vercode)\n";
 		    if ($major > 1) {
 			print "Too high major version, fallback\n";
 			$ver = $default_version;
