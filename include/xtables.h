@@ -1,11 +1,13 @@
 #ifndef _XTABLES_H
 #define _XTABLES_H
 
+#include <sys/socket.h> /* PF_* */
 #include <sys/types.h>
+#include <stdbool.h>
+#include <net/if.h>
 #include <linux/types.h>
 #include <linux/netfilter/x_tables.h>
 #include <libiptc/libxtc.h>
-#include <stdbool.h>
 
 #ifndef IPPROTO_SCTP
 #define IPPROTO_SCTP 132
@@ -39,6 +41,7 @@
 #define XTABLES_VERSION_CODE IPTABLES_VERSION_CODE
 #endif
 
+struct in_addr;
 
 /* Include file for additions: new matches and targets. */
 struct xtables_match
