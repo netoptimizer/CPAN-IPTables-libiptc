@@ -54,11 +54,15 @@ use ExtUtils::MakeMaker;
 	    } else {
 		chomp $output;
 		#print "Matching on output:[$output]\n";
-		if ($output =~ /iptables v(\d+)\.(\d+)\.(\d+)/) {
+		if ($output =~ /iptables v(\d+)\.(\d+)\.(\d+)\.?(\d?)/) {
 		    my $major    = $1;
 		    my $minor    = $2;
 		    my $revision = $3;
+		    my $extra    = $4;
 		    $ver="$major.$minor.$revision";
+		    if (defined $extra) {
+			$ver = $ver . "." . ${extra};
+		    }
 		    $vercode=xtables_api_version($major,$minor,$revision);
 		    print "Detected iptables version: $major.$minor.$revision (vercode:$vercode)\n";
 		    if ($major > 1) {
