@@ -1,8 +1,18 @@
 Revision history for Perl extension IPTables::libiptc.
 
-0.18-dev01	Fri Oct 23 17:45:00 CEST 2009
+0.18-rc1	Mon Oct 26 12:54:05 CET 2009
 
 	- This version is compatible with iptables 1.4.1 and 1.4.2.
+
+	- Significant changes when into 1.4.3, which thus cannot be
+	  kept binary compatible with this release.  Expect to see the
+	  following error "undefined symbol: xt_params" if using this
+	  release anyhow.
+
+	- The segfault issues when comparing the IPTABLES_VERSION
+	  variable is handled, and is based upon the iptables detected
+	  by the Makefile.PL script.  And some compile time hacks to
+	  include/xtables.h
 
 
 0.17	Fri Oct 23 17:21:23 CEST 2009
