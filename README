@@ -1,4 +1,4 @@
-IPTables-libiptc version 0.17
+IPTables-libiptc version 0.18
 =============================
 
 This package provides a Perl interface to the netfilter/iptables
@@ -19,9 +19,8 @@ on the system.
 
 This design limits us to only export the libiptc chain manipulation
 functions.  All rule manipulations are done through the iptables.c
-"do_command" function. (As iptables.c is not made as a library, below
-iptables version 1.4.3, the package unfortunately needs to
-maintain/contain this C file).
+"do_command" function. (As iptables.c is not made as a library, the
+package unfortunately needs to maintain/contain this C file).
 
 
 DEPENDENCIES
@@ -36,21 +35,25 @@ generation of the Makefile.PL file.  This sets the IPTABLES_VERSION
 variable as it needs to match the .so extentions available on you
 system.
 
-This release only supports the iptables versions 1.4.1.  The default
-fallback IPTABLES_VERSION is currently set to version 1.4.1.
+This release only supports the iptables versions 1.4.1 and 1.4.2.
+The default fallback IPTABLES_VERSION is currently set to version 1.4.2.
 
 
 BUGS
 
+This module tries to detect the segfault version conflicts, and
+performs some compile time hacks to xtables.h header file.
+
 There are some segfault issues when comparing the IPTABLES_VERSION
 variable (in the dynamic loadable modules) between iptables versions,
 1.4.1 and 1.4.2, and also between 1.4.2 and 1.4.3.  It has been fixed
-from version 1.4.3.2 and beyond (see git commit c4edfa63eda06)
+from version 1.4.3.2 and beyond (see git commit c4edfa63eda06) Its
+related to "include/xtables.h" (structs xtables_match and
+xtables_target, and location of the "version" element).
 
-Its related to "include/xtables.h" (structs xtables_match and
-xtables_target, and location of the "version" element).  Thus, you can
-avoid this issue by using the include file "include/xtables.h" from
-the appropiate version.
+Significant changes when into 1.4.3, which thus cannot be kept binary
+compatible with this release.  Expect to see the following
+error: "undefined symbol: xt_params"  if using this release anyhow.
 
 
 INSTALLATION
@@ -61,17 +64,17 @@ located in /lib/xtables).  The iptables path for dynamic loading
 (where the libipt_*.so files are located) can be altered by setting
 the variable XTABLES_LIBDIR while calling make.  This can also be
 changed later at runtime setting the environment variable
-IPTABLES_LIB_DIR.
+XTABLES_LIBDIR.
 
 To install this module type the following:
 
    perl Makefile.PL PREFIX=/usr/local/
    make XTABLES_LIBDIR=/usr/local/libexec/xtables
    sudo make test
-   make install PREFIX=/usr/local/stow/IPTables-libiptc-0.17
+   make install PREFIX=/usr/local/stow/IPTables-libiptc-0.18
 
    cd /usr/local/stow/
-   stow IPTables-libiptc-0.17
+   stow IPTables-libiptc-0.18
 
 
 COPYRIGHT AND LICENCE
