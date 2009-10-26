@@ -538,13 +538,6 @@ void xtables_register_match(struct xtables_match *me)
 {
 	struct xtables_match **i, *old;
 
-	/* hawk@comx.dk: HACK only compare the first three "numbers"
-	    (eg. major, minor and revision). Assumes a single digit
-	    for each number (eg. 1.4.1) and only compares the first 5
-	    digits.
-	*/
-
-	//if (strcmp(me->version, program_version) != 0) {
 	if (strncmp(me->version, program_version, 5) != 0) {
 		fprintf(stderr, "%s: match `%s' v%s (I'm v%s).\n",
 			program_name, me->name, me->version, program_version);
@@ -616,13 +609,6 @@ void xtables_register_target(struct xtables_target *me)
 {
 	struct xtables_target *old;
 
-	/* hawk@comx.dk: HACK only compare the first three "numbers"
-	    (eg. major, minor and revision). Assumes a single digit
-	    for each number (eg. 1.4.1) and only compares the first 5
-	    digits.
-	*/
-
-	//if (strcmp(me->version, program_version) != 0) {
 	if (strncmp(me->version, program_version, 5) != 0) {
 		fprintf(stderr, "%s: target `%s' v%s (I'm v%s).\n",
 			program_name, me->name, me->version, program_version);
