@@ -1,13 +1,20 @@
 #ifndef _XTABLES_H
 #define _XTABLES_H
 
+/*
+ * Changing any structs/functions may incur a needed change
+ * in libxtables_vcurrent/vage too.
+ */
+
 #include <sys/socket.h> /* PF_* */
 #include <sys/types.h>
+#include <limits.h>
 #include <stdbool.h>
+#include <netinet/in.h>
 #include <net/if.h>
 #include <linux/types.h>
+#include <linux/netfilter.h>
 #include <linux/netfilter/x_tables.h>
-#include <libiptc/libxtc.h>
 
 #ifndef IPPROTO_SCTP
 #define IPPROTO_SCTP 132
@@ -15,69 +22,35 @@
 #ifndef IPPROTO_DCCP
 #define IPPROTO_DCCP 33
 #endif
+#ifndef IPPROTO_MH
+#	define IPPROTO_MH 135
+#endif
 #ifndef IPPROTO_UDPLITE
 #define IPPROTO_UDPLITE	136
 #endif
 
-/* Hawk: Trying to handle ABI segfault bug */
-#ifndef IPTABLES_VERSION_CODE
-#error "IPTABLES version code not available"
-#else
-#define DETECTED_VERSION_CODE IPTABLES_VERSION_CODE
-#endif
-
-
-#define XTABLES_API_VERSION(x,y,z)    (0x10000*(x) + 0x100*(y) + z)
-
-
-#if   DETECTED_VERSION_CODE == XTABLES_API_VERSION(1,4,3)
-#define XTABLES_VERSION "libxtables.so.1"
-#define XTABLES_VERSION_CODE 1
-#elif DETECTED_VERSION_CODE >= XTABLES_API_VERSION(1,4,4)
 #define XTABLES_VERSION "libxtables.so.2"
 #define XTABLES_VERSION_CODE 2
-#else
-#define XTABLES_VERSION      IPTABLES_VERSION
-#define XTABLES_VERSION_CODE IPTABLES_VERSION_CODE
-#endif
 
 struct in_addr;
 
 /* Include file for additions: new matches and targets. */
 struct xtables_match
 {
-
-#if DETECTED_VERSION_CODE >= XTABLES_API_VERSION(1,4,3)
-#warning "Versions 1.4.3.2 or above have the version pointer first"
-        /*
-         * ABI/API version this module requires. Must be first member,
-         * as the rest of this struct may be subject to ABI changes.
-         */
-        const char *version;
-#endif
+	/*
+	 * ABI/API version this module requires. Must be first member,
+	 * as the rest of this struct may be subject to ABI changes.
+	 */
+	const char *version;
 
 	struct xtables_match *next;
 
-#if DETECTED_VERSION_CODE <= XTABLES_API_VERSION(1,4,1)
-	xt_chainlabel name;
-#elif DETECTED_VERSION_CODE == XTABLES_API_VERSION(1,4,2)
-#warning "Trying to avoid segfaults on version 1.4.2"
 	const char *name;
-#else
-#warning "Versions above 1.4.2 are unlikely to work due to ABI changes"
-	const char *name;
-#endif
 
 	/* Revision of match (0 by default). */
 	u_int8_t revision;
 
 	u_int16_t family;
-
-
-#if DETECTED_VERSION_CODE < XTABLES_API_VERSION(1,4,3)
-#warning "Trying to avoid segfaults, version pointer old position"
-	const char *version;
-#endif
 
 	/* Size of match data. */
 	size_t size;
@@ -124,34 +97,22 @@ struct xtables_match
 
 struct xtables_target
 {
-#if DETECTED_VERSION_CODE >= XTABLES_API_VERSION(1,4,3)
-#warning "Versions 1.4.3.2 or above have the version pointer first"
-        /*
-         * ABI/API version this module requires. Must be first member,
-         * as the rest of this struct may be subject to ABI changes.
-         */
-        const char *version;
-#endif
+	/*
+	 * ABI/API version this module requires. Must be first member,
+	 * as the rest of this struct may be subject to ABI changes.
+	 */
+	const char *version;
 
 	struct xtables_target *next;
 
-#if DETECTED_VERSION_CODE <= XTABLES_API_VERSION(1,4,1)
-	xt_chainlabel name;
-#elif DETECTED_VERSION_CODE == XTABLES_API_VERSION(1,4,2)
+
 	const char *name;
-#else
-	const char *name;
-#endif
 
 	/* Revision of target (0 by default). */
 	u_int8_t revision;
 
 	u_int16_t family;
 
-#if DETECTED_VERSION_CODE < XTABLES_API_VERSION(1,4,3)
-#warning "Trying to avoid segfaults, version pointer old position"
-	const char *version;
-#endif
 
 	/* Size of target data. */
 	size_t size;
@@ -196,71 +157,122 @@ struct xtables_target
 #endif
 };
 
-/* Your shared library should call one of these. */
-extern void xtables_register_match(struct xtables_match *me);
-extern void xtables_register_target(struct xtables_target *me);
+struct xtables_rule_match {
+	struct xtables_rule_match *next;
+	struct xtables_match *match;
+	/* Multiple matches of the same type: the ones before
+	   the current one are completed from parsing point of view */
+	bool completed;
+};
 
-extern int string_to_number_ll(const char *s,
-			       unsigned long long min,
-			       unsigned long long max,
-			       unsigned long long *ret);
-extern int string_to_number_l(const char *s,
-			      unsigned long min,
-			      unsigned long max,
-			      unsigned long *ret);
-extern int string_to_number(const char *s,
-			    unsigned int min,
-			    unsigned int max,
-			    unsigned int *ret);
-extern bool strtonuml(const char *, char **, unsigned long *,
-	unsigned long, unsigned long);
-extern bool strtonum(const char *, char **, unsigned int *,
-	unsigned int, unsigned int);
-extern int service_to_port(const char *name, const char *proto);
-extern u_int16_t parse_port(const char *port, const char *proto);
-extern void
-parse_interface(const char *arg, char *vianame, unsigned char *mask);
+/**
+ * struct xtables_pprot -
+ *
+ * A few hardcoded protocols for 'all' and in case the user has no
+ * /etc/protocols.
+ */
+struct xtables_pprot {
+	const char *name;
+	u_int8_t num;
+};
 
-enum exittype {
+enum xtables_tryload {
+	XTF_DONT_LOAD,
+	XTF_DURING_LOAD,
+	XTF_TRY_LOAD,
+	XTF_LOAD_MUST_SUCCEED,
+};
+
+enum xtables_exittype {
 	OTHER_PROBLEM = 1,
 	PARAMETER_PROBLEM,
 	VERSION_PROBLEM,
 	RESOURCE_PROBLEM,
-	P_ONLY_ONCE,
-	P_NO_INVERT,
-	P_BAD_VALUE,
-	P_ONE_ACTION,
+	XTF_ONLY_ONCE,
+	XTF_NO_INVERT,
+	XTF_BAD_VALUE,
+	XTF_ONE_ACTION,
 };
+
+struct xtables_globals
+{
+	unsigned int option_offset;
+	const char *program_name, *program_version;
+	struct option *orig_opts;
+	struct option *opts;
+	void (*exit_err)(enum xtables_exittype status, const char *msg, ...) __attribute__((noreturn, format(printf,2,3)));
+};
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern const char *xtables_modprobe_program;
+extern struct xtables_match *xtables_matches;
+extern struct xtables_target *xtables_targets;
+
+extern void xtables_init(void);
+extern void xtables_set_nfproto(uint8_t);
+extern void *xtables_calloc(size_t, size_t);
+extern void *xtables_malloc(size_t);
+
+extern int xtables_insmod(const char *, const char *, bool);
+extern int xtables_load_ko(const char *, bool);
+extern int xtables_set_params(struct xtables_globals *xtp);
+extern void xtables_set_revision(char *name, u_int8_t revision);
+extern void xtables_free_opts(int reset_offset);
+extern struct option *xtables_merge_options(struct option *oldopts,
+	const struct option *newopts, unsigned int *option_offset);
+
+extern int xtables_init_all(struct xtables_globals *xtp, uint8_t nfproto);
+extern struct xtables_match *xtables_find_match(const char *name,
+	enum xtables_tryload, struct xtables_rule_match **match);
+extern struct xtables_target *xtables_find_target(const char *name,
+	enum xtables_tryload);
+
+/* Your shared library should call one of these. */
+extern void xtables_register_match(struct xtables_match *me);
+extern void xtables_register_target(struct xtables_target *me);
+
+extern bool xtables_strtoul(const char *, char **, unsigned long *,
+	unsigned long, unsigned long);
+extern bool xtables_strtoui(const char *, char **, unsigned int *,
+	unsigned int, unsigned int);
+extern int xtables_service_to_port(const char *name, const char *proto);
+extern u_int16_t xtables_parse_port(const char *port, const char *proto);
+extern void
+xtables_parse_interface(const char *arg, char *vianame, unsigned char *mask);
 
 /* this is a special 64bit data type that is 8-byte aligned */
 #define aligned_u64 u_int64_t __attribute__((aligned(8)))
 
-int check_inverse(const char option[], int *invert, int *my_optind, int argc);
-void exit_error(enum exittype, const char *, ...)__attribute__((noreturn,
-							  format(printf,2,3)));
-extern void param_act(unsigned int, const char *, ...);
-extern const char *program_name, *program_version;
+int xtables_check_inverse(const char option[], int *invert,
+	int *my_optind, int argc);
+extern struct xtables_globals *xt_params;
+#define xtables_error (xt_params->exit_err)
 
-extern const char *ipaddr_to_numeric(const struct in_addr *);
-extern const char *ipaddr_to_anyname(const struct in_addr *);
-extern const char *ipmask_to_numeric(const struct in_addr *);
-extern struct in_addr *numeric_to_ipaddr(const char *);
-extern struct in_addr *numeric_to_ipmask(const char *);
-extern void ipparse_hostnetworkmask(const char *, struct in_addr **,
+extern void xtables_param_act(unsigned int, const char *, ...);
+
+extern const char *xtables_ipaddr_to_numeric(const struct in_addr *);
+extern const char *xtables_ipaddr_to_anyname(const struct in_addr *);
+extern const char *xtables_ipmask_to_numeric(const struct in_addr *);
+extern struct in_addr *xtables_numeric_to_ipaddr(const char *);
+extern struct in_addr *xtables_numeric_to_ipmask(const char *);
+extern void xtables_ipparse_any(const char *, struct in_addr **,
 	struct in_addr *, unsigned int *);
 
-extern struct in6_addr *numeric_to_ip6addr(const char *);
-extern const char *ip6addr_to_numeric(const struct in6_addr *);
-extern const char *ip6addr_to_anyname(const struct in6_addr *);
-extern const char *ip6mask_to_numeric(const struct in6_addr *);
-extern void ip6parse_hostnetworkmask(const char *, struct in6_addr **,
+extern struct in6_addr *xtables_numeric_to_ip6addr(const char *);
+extern const char *xtables_ip6addr_to_numeric(const struct in6_addr *);
+extern const char *xtables_ip6addr_to_anyname(const struct in6_addr *);
+extern const char *xtables_ip6mask_to_numeric(const struct in6_addr *);
+extern void xtables_ip6parse_any(const char *, struct in6_addr **,
 	struct in6_addr *, unsigned int *);
 
 /**
  * Print the specified value to standard output, quoting dangerous
  * characters if required.
  */
-extern void save_string(const char *value);
+extern void xtables_save_string(const char *value);
 
 #ifdef NO_SHARED_LIBS
 #	ifdef _INIT
@@ -272,11 +284,23 @@ extern void save_string(const char *value);
 #	define _init __attribute__((constructor)) _INIT
 #endif
 
-/* Present in both iptables.c and ip6tables.c */
-extern u_int16_t parse_protocol(const char *s);
+extern const struct xtables_pprot xtables_chain_protos[];
+extern u_int16_t xtables_parse_protocol(const char *s);
 
 #ifdef XTABLES_INTERNAL
-#	include <xtables/internal.h>
+
+/* Shipped modules rely on this... */
+
+#	ifndef ARRAY_SIZE
+#		define ARRAY_SIZE(x) (sizeof(x) / sizeof(*(x)))
+#	endif
+
+extern void _init(void);
+
+#endif
+
+#ifdef __cplusplus
+} /* extern "C" */
 #endif
 
 #endif /* _XTABLES_H */
