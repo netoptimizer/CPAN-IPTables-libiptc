@@ -48,31 +48,35 @@ main(int argc, char *argv[])
 {
 	int ret;
 	char *table = "filter";
-	iptc_handle_t handle = NULL;
+	struct iptc_handle *handle = NULL;
 
-	program_name = "iptables";
-	program_version = XTABLES_VERSION;
-
-	lib_dir = getenv("XTABLES_LIBDIR");
-	if (lib_dir == NULL) {
-		lib_dir = getenv("IPTABLES_LIB_DIR");
-		if (lib_dir != NULL)
-			fprintf(stderr, "IPTABLES_LIB_DIR is deprecated\n");
+	iptables_globals.program_name = "iptables";
+	ret = xtables_init_all(&iptables_globals, NFPROTO_IPV4);
+	if (ret < 0) {
+		fprintf(stderr, "%s/%s Failed to initialize xtables\n",
+				iptables_globals.program_name,
+				iptables_globals.program_version);
+				exit(1);
 	}
-	if (lib_dir == NULL)
-		lib_dir = XTABLES_LIBDIR;
-
 #ifdef NO_SHARED_LIBS
 	init_extensions();
 #endif
 
 	ret = do_command(argc, argv, &table, &handle);
-	if (ret)
-		ret = iptc_commit(&handle);
+	if (ret) {
+		ret = iptc_commit(handle);
+		iptc_free(handle);
+	}
 
 	if (!ret) {
-		fprintf(stderr, "iptables: %s\n",
-			iptc_strerror(errno));
+		if (errno == EINVAL) {
+			fprintf(stderr, "iptables: %s. "
+					"Run `dmesg' for more information.\n",
+				iptc_strerror(errno));
+		} else {
+			fprintf(stderr, "iptables: %s.\n",
+				iptc_strerror(errno));
+		}
 		if (errno == EAGAIN) {
 			exit(RESOURCE_PROBLEM);
 		}
