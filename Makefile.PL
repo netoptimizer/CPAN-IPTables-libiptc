@@ -81,25 +81,18 @@ use ExtUtils::MakeMaker;
 			print "\n";
 		    }
 
-		    if ($minor == 4 && $revision >= 3) {
+		    if ($minor == 4 && $revision < 3) {
 			print "\n";
 			print "-=-=-=- WARNING: Incompatible iptables version -=-=-=-";
 			print "\n";
 			print " This perl module release only supports iptables versions:\n";
-			print "   v1.4.1 and v1.4.2 \n";
+			print "   v1.4.3.2 and above \n";
 			print "\n";
+			print "We recommend that you instead use version 0.18 of IPTables::libiptc\n";
+			print "on your system, for supporting v1.4.1 and v1.4.2 \n";
 			print "\n";
-			print " Significant changes when into 1.4.3, which thus cannot be kept binary\n";
-			print " compatible with this release.  Expect to see the following error:\n";
-			print "   \"undefined symbol: xt_params\"  if using this release anyhow.\n";
-			print "\n";
-			print " There are some segfault issues when comparing the IPTABLES_VERSION\n";
-			print " variable (in the dynamic loadable modules) between iptables versions\n";
-			print " 1.4.1 and 1.4.2, and also between 1.4.2 and 1.4.3. It has been fixed\n";
-			print " from version 1.4.3.2 and beyond (see git commit c4edfa63eda06)\n";
-			print "\n";
-			print " This module tries to detect the segfault version conflicts, and\n";
-			print " performs some compile time hacks to xtables.h header file.\n";
+			print " Significant changes when into 1.4.3, and thus cannot be kept binary\n";
+			print " compatible backward with this release.\n";
 			print "\n";
 			print " YOU HAVE BEEN WARNED!!!\n";
 			print "\n";
@@ -112,7 +105,7 @@ use ExtUtils::MakeMaker;
 	}
 
 	sub post_initialize {
-	    my $default_version = "1.4.2";
+	    my $default_version = "1.4.4";
 	    my ($ver, $vercode, $xtables_libdir) = detect_iptables_version($default_version);
 	    #print "vercode: $vercode\n";
 "
