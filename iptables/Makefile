@@ -29,6 +29,11 @@ ifndef IPT_LIBDIR
 IPT_LIBDIR:=$(LIBDIR)/iptables
 endif
 
+ifndef XTABLES_LIBDIR
+XTABLES_LIBDIR:=/lib/xtables/
+endif
+
+
 ifndef LDFLAGS
 LDFLAGS = -L$(LIBDIR)
 endif
@@ -45,7 +50,7 @@ LOCAL_IPTC_OBJ:=../library_iptc/libiptc.a
 LDLIBS=-ldl -lnsl
 
 COPT_FLAGS:=-O2
-CFLAGS:=$(COPT_FLAGS) -Wall -Wunused -I$(KERNEL_DIR)/include -I$(INCDIR) -I../include/ -fPIC -DXTABLES_INTERNAL
+CFLAGS:=$(COPT_FLAGS) -Wall -Wunused -I$(KERNEL_DIR)/include -I$(INCDIR) -I../include/ -fPIC -DXTABLES_INTERNAL -g
 #-g -DDEBUG #-pg # -DIPTC_DEBUG
 
 DEFINES:=-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DXTABLES_LIBDIR=\"$(XTABLES_LIBDIR)\" -DIPTABLES_VERSION_CODE=\$(IPTABLES_VERSION_CODE)
@@ -61,6 +66,11 @@ xtables.o: xtables.c Makefile
 
 iptables-standalone: iptables-standalone.c iptables.o xtables.o
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LOCAL_IPTC_OBJ) $(LDLIBS)
+
+# Try to load the shared dyn libiptc.so
+iptables-dyn: iptables-standalone.c iptables.o xtables.o
+	echo $@ $^
+	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS) -liptc
 
 iptables-blocking: iptables-blocking.c iptables.o xtables.o
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LOCAL_IPTC_OBJ) $(LDLIBS)
