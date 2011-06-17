@@ -9,11 +9,11 @@ ifndef KERNEL_DIR
 endif
 
 ifndef IPTABLES_VERSION
-IPTABLES_VERSION:=1.4.1
+IPTABLES_VERSION:=1.4.4
 endif
 
 ifndef IPTABLES_VERSION_CODE
-IPTABLES_VERSION_CODE:=66561
+IPTABLES_VERSION_CODE:=66564
 endif
 
 
@@ -69,8 +69,13 @@ iptables-standalone: iptables-standalone.c iptables.o xtables.o
 
 # Try to load the shared dyn libiptc.so
 iptables-dyn: iptables-standalone.c iptables.o xtables.o
-	echo $@ $^
+	echo Dyn1: $@ $^
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS) -liptc
+
+# Try to load the shared dyn libiptc.so
+iptables-dyn2: iptables-standalone.c iptables.o
+	echo  Dyn2: $@ $^
+	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS) -liptc -lxtables
 
 iptables-blocking: iptables-blocking.c iptables.o xtables.o
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LOCAL_IPTC_OBJ) $(LDLIBS)
