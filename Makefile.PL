@@ -1,6 +1,10 @@
 use 5.008004;
 use ExtUtils::MakeMaker;
 
+# TODO: Create some test which detect if xtables.h is installed on the
+# target system.  Under Debian this file is located in software
+# package: "iptables-dev".
+
 {
         package MY;
         use File::Basename; #for dirname

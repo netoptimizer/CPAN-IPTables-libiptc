@@ -1,4 +1,9 @@
 
+* compile test for xtables.h being installed
+  - with configure/automake this would be easy, with Perls MakeMaker its not
+
+* API change in v1.4.5 with xtables_check_inverse see:bf97128c
+
 * Include "interface.pm" perhaps under a different name.
 
 
