@@ -49,16 +49,20 @@ CFLAGS:=$(COPT_FLAGS) -Wall -Wunused -I$(KERNEL_DIR)/include -I$(INCDIR) -I../in
 DEFINES:=-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DXTABLES_LIBDIR=\"$(XTABLES_LIBDIR)\" -DIPTABLES_VERSION_CODE=\$(IPTABLES_VERSION_CODE)
 default: all
 
-all: iptables.o iptables-standalone iptables-blocking
+all: iptables.o iptables-standalone iptables-blocking xshared.o
 
 iptables.o: iptables.c Makefile
 	$(CC) $(CFLAGS) $(DEFINES) -c -o $@ $<
 
-iptables-standalone: iptables-standalone.c iptables.o
+xshared.o: xshared.c
+	$(CC) $(CFLAGS) $(DEFINES) -c -o $@ $<
+
+iptables-standalone: iptables-standalone.c iptables.o xshared.o
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
-iptables-blocking: iptables-blocking.c iptables.o
+iptables-blocking: iptables-blocking.c iptables.o xshared.o
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
 
 ## Try to make static version
 #iptables-static: iptables-standalone.c iptables.o xtables.o

@@ -165,7 +165,7 @@ LOCAL_LIB_IPTC:=-Llibrary_iptc/
 #	make -C library_iptc/ all IPTABLES_VERSION=\"\$(IPTABLES_VERSION)\" IPTABLES_VERSION_CODE=\"\$(IPTABLES_VERSION_CODE)\"
 
 #iptables/iptables.o iptables/xtables.o: iptables/*.c library_iptc/libiptc.a
-iptables/iptables.o: iptables/*.c
+iptables/iptables.o iptables/xshared.o: iptables/*.c
 	make -C iptables/ all PREFIX=\"\$(PREFIX)\" IPTABLES_VERSION=\"\$(IPTABLES_VERSION)\" XTABLES_LIBDIR=\"\$(XTABLES_LIBDIR)\" IPTABLES_VERSION_CODE=\"\$(IPTABLES_VERSION_CODE)\"
 
 install::
@@ -200,7 +200,7 @@ WriteMakefile(
                          # e.g., '-I. -I/usr/include/other'
     # Un-comment this if you add C files to link with later:
     # OBJECT            => '$(O_FILES)', # link all the C files too
-    OBJECT            => '$(O_FILES) iptables/iptables.o',
+    OBJECT            => '$(O_FILES) iptables/iptables.o iptables/xshared.o',
 ##  OBJECT            => '$(O_FILES) iptables/iptables.o iptables/xtables.o library_iptc/libiptc.a',
                       # link all the C files too
     PREFIX            => '/usr/local',
