@@ -35,12 +35,16 @@ t/01_chain_create.t
 t/02_chain_create_commit.t
 t/03_chain_exist.t
 t/04_chain_delete_commit.t
+t/05_list_rules_IPs.t
 t/10_rule_create.t
+t/11_load_extention_tcp.t
 test/test01.pl
 test/test03.pl
 test/test04.pl
 test/test05.pl
 test/test07_bug.pl
+test/test09_list_rules_IPs.pl
+test/test10_load_extention.pl
 fallback/const-c.inc
 fallback/const-xs.inc
 
