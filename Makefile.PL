@@ -38,7 +38,8 @@ use ExtUtils::MakeMaker;
 	    } else {
 		# The exit code is in the high byte of the 16-bit status word
 		$exitcode = $? >> 8;
-		print(" WARN: error occured to run: which $cmd (err:$!)\n");
+		print(" WARN: error occured to run: which $cmd (err:$!)\n")
+		    if ($exitcode > 0);
 	    }
 	    $output = dirname($output); # remove "iptables"
 	    $output = dirname($output); # remove "sbin/"
