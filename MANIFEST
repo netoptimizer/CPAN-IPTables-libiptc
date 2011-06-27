@@ -17,6 +17,7 @@ iptables/iptables-blocking.c
 iptables/iptables-multi.h
 iptables/Makefile
 include/iptables.h
+include/iptables/internal.h
 include/iptables_common.h
 include/compat_xtables.h
 
