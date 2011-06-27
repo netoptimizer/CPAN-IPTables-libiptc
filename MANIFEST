@@ -18,6 +18,7 @@ iptables/iptables-multi.h
 iptables/Makefile
 include/iptables.h
 include/iptables_common.h
+include/compat_xtables.h
 
 library_iptc/libip4tc.c
 library_iptc/libip6tc.c
