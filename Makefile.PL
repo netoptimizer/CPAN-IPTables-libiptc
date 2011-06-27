@@ -3,6 +3,7 @@ use ExtUtils::MakeMaker;
 
 {
         package MY;
+        use File::Basename; #for dirname
 
 	sub exec_iptables($) {
 	    my $cmd = shift;
@@ -19,6 +20,37 @@ use ExtUtils::MakeMaker;
 		$exitcode = $? >> 8;
 	    }
 	    return ($exitcode, $output);
+	}
+
+	sub which_xtables_libdir($) {
+	    # Find the xtables libdir based upon path of iptables binary
+	    my $cmd = shift;
+	    my $exitcode;
+	    print "Detect the xtables libdir path of: \"$cmd\"\n";
+
+	    my $output = `which $cmd 2>&1`;
+	    my $xtables_libdir = "/lib/xtables";
+
+	    if ($? == -1) {
+		# Cannot execute the command
+		print(" WARN: Cannot execute the command:$cmd (err:$!)\n");
+		$exitcode=-1;
+	    } else {
+		# The exit code is in the high byte of the 16-bit status word
+		$exitcode = $? >> 8;
+		print(" WARN: error occured to run: which $cmd (err:$!)\n");
+	    }
+	    $output = dirname($output); # remove "iptables"
+	    $output = dirname($output); # remove "sbin/"
+	    if ($output =~ m/^\/$/ ) {
+		# Only contains "/" means this was /sbin/iptables
+		# and it has a special load path
+		$xtables_libdir = "/lib/xtables";
+	    } else {
+		$xtables_libdir = "${output}/libexec/xtables"
+	    }
+	    print " - detected xtables libdir: \"$xtables_libdir\"\n";
+	    return $xtables_libdir;
 	}
 
 	sub xtables_api_version($$$) {
@@ -44,6 +76,10 @@ use ExtUtils::MakeMaker;
 		if ($exitcode != -1) {
 		    $xtables_libdir = "/usr/local/libexec/xtables";
 		}
+	    } else {
+		# iptables found in the path, but where?  We need to
+		# know which is the correct $xtables_libdir to use.
+		$xtables_libdir = which_xtables_libdir("iptables");
 	    }
 	    ($exitcode, $output) = exec_iptables("/sbin/iptables -V")
 		if ($exitcode == -1);
