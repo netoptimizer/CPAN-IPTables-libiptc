@@ -4,7 +4,14 @@
 
 * API change in v1.4.5 with xtables_check_inverse see:bf97128c
 
+
+* Fix the do_command() exit problem, where Perl dies on simple syntax
+  errors. Iptables do support reassigning the exit_err() function
+  pointer to avoid this hard exit().
+
+
 * Include "interface.pm" perhaps under a different name.
+
 
 
 

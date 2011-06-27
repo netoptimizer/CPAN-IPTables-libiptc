@@ -50,6 +50,15 @@ init(tablename)
     iptables_globals.program_name = "perl-to-libiptc";
     //iptables_globals.program_version = XTABLES_VERSION; //??
 
+    // TODO: reassing function pointer exit_err() to avoid that perl
+    //       dies on iptables do_command errors.
+    //
+    //  void (*exit_err)(enum xtables_exittype status, const char *msg, ...) __attribute__((noreturn, format(printf,2,3)));
+    //
+    // See function examples in:
+    //  iptables.c: func iptables_exit_error()
+    //  xtables.c : func basic_exit_err()
+
     ret = xtables_init_all(&iptables_globals, NFPROTO_IPV4);
     if (ret < 0) {
         fprintf(stderr, "%s/%s Failed to initialize xtables\n",
