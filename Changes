@@ -4,6 +4,10 @@ Recent changes
 
 	- Working on support for iptables v.1.4.4
 
+	- Working on using dynamic shared libs libiptc.so and
+          libxtables.so, available on target system, instead of
+          maintaining this code locally.
+
 0.18	Mon Oct 26 14:23:51 CET 2009
 
 	- This version is compatible with iptables 1.4.1 and 1.4.2.
