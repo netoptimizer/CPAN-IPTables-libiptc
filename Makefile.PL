@@ -155,10 +155,13 @@ LOCAL_LIB_IPTC:=-Llibrary_iptc/
 
         sub postamble {
 "
-library_iptc/libiptc.a: library_iptc/*.c
-	make -C library_iptc/ all IPTABLES_VERSION=\"\$(IPTABLES_VERSION)\" IPTABLES_VERSION_CODE=\"\$(IPTABLES_VERSION_CODE)\"
 
-iptables/iptables.o iptables/xtables.o: iptables/*.c library_iptc/libiptc.a
+# Not needed anymore
+#library_iptc/libiptc.a: library_iptc/*.c
+#	make -C library_iptc/ all IPTABLES_VERSION=\"\$(IPTABLES_VERSION)\" IPTABLES_VERSION_CODE=\"\$(IPTABLES_VERSION_CODE)\"
+
+#iptables/iptables.o iptables/xtables.o: iptables/*.c library_iptc/libiptc.a
+iptables/iptables.o iptables/xtables.o: iptables/*.c
 	make -C iptables/ all PREFIX=\"\$(PREFIX)\" IPTABLES_VERSION=\"\$(IPTABLES_VERSION)\" XTABLES_LIBDIR=\"\$(XTABLES_LIBDIR)\" IPTABLES_VERSION_CODE=\"\$(IPTABLES_VERSION_CODE)\"
 
 install::
@@ -166,7 +169,7 @@ install::
 
 clean::
 	make -C iptables/ clean
-	make -C library_iptc/ clean
+#	make -C library_iptc/ clean
 ";
         }
 }
