@@ -12,15 +12,12 @@ include/libiptc/ipt_kernel_headers.h
 include/libiptc/libxtc.h
 
 iptables/iptables.c
-iptables/xtables.c
 iptables/iptables-standalone.c
 iptables/iptables-blocking.c
 iptables/iptables-multi.h
 iptables/Makefile
 include/iptables.h
-include/xtables.h
 include/iptables_common.h
-include/xtables/internal.h
 
 library_iptc/libip4tc.c
 library_iptc/libip6tc.c

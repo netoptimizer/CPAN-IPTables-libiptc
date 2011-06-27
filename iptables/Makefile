@@ -54,9 +54,6 @@ all: iptables.o iptables-standalone iptables-blocking
 iptables.o: iptables.c Makefile
 	$(CC) $(CFLAGS) $(DEFINES) -c -o $@ $<
 
-#xtables.o: xtables.c Makefile
-#	$(CC) $(CFLAGS) $(DEFINES) -c -o $@ $<
-
 iptables-standalone: iptables-standalone.c iptables.o
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
