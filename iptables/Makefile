@@ -39,14 +39,6 @@ LDFLAGS = -L$(LIBDIR)
 endif
 LDFLAGS+=-rdynamic
 
-# Local version of libiptc
-# ($(LOCAL_LIB_IPTC) cannot be used here because it needs a "../")
-#LD_LOCAL_IPTC:=-L../library_iptc/
-#
-# Need to link directly with object library
-# (Update: don't use libiptc.a anymore)
-###LOCAL_IPTC_OBJ:=../library_iptc/libiptc.a
-
 #LDLIBS=-liptc -ldl -lnsl
 LDLIBS=-ldl -lnsl -liptc -lxtables
 
@@ -57,13 +49,13 @@ CFLAGS:=$(COPT_FLAGS) -Wall -Wunused -I$(KERNEL_DIR)/include -I$(INCDIR) -I../in
 DEFINES:=-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DXTABLES_LIBDIR=\"$(XTABLES_LIBDIR)\" -DIPTABLES_VERSION_CODE=\$(IPTABLES_VERSION_CODE)
 default: all
 
-all: iptables.o xtables.o iptables-standalone iptables-blocking
+all: iptables.o iptables-standalone iptables-blocking
 
 iptables.o: iptables.c Makefile
 	$(CC) $(CFLAGS) $(DEFINES) -c -o $@ $<
 
-xtables.o: xtables.c Makefile
-	$(CC) $(CFLAGS) $(DEFINES) -c -o $@ $<
+#xtables.o: xtables.c Makefile
+#	$(CC) $(CFLAGS) $(DEFINES) -c -o $@ $<
 
 iptables-standalone: iptables-standalone.c iptables.o
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS)
@@ -71,10 +63,10 @@ iptables-standalone: iptables-standalone.c iptables.o
 iptables-blocking: iptables-blocking.c iptables.o
 	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
-# Try to make static version
-iptables-static: iptables-standalone.c iptables.o xtables.o
-	echo  Static-ver: $@ $^
-	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ ../library_iptc/libiptc.a -ldl -lnsl
+## Try to make static version
+#iptables-static: iptables-standalone.c iptables.o xtables.o
+#	echo  Static-ver: $@ $^
+#	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ ../library_iptc/libiptc.a -ldl -lnsl
 
 install:
 	install -m 0755 -d $(DESTDIR)/$(SBINDIR)
