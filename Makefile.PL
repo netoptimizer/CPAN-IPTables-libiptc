@@ -165,7 +165,7 @@ LOCAL_LIB_IPTC:=-Llibrary_iptc/
 #	make -C library_iptc/ all IPTABLES_VERSION=\"\$(IPTABLES_VERSION)\" IPTABLES_VERSION_CODE=\"\$(IPTABLES_VERSION_CODE)\"
 
 #iptables/iptables.o iptables/xtables.o: iptables/*.c library_iptc/libiptc.a
-iptables/iptables.o iptables/xtables.o: iptables/*.c
+iptables/iptables.o: iptables/*.c
 	make -C iptables/ all PREFIX=\"\$(PREFIX)\" IPTABLES_VERSION=\"\$(IPTABLES_VERSION)\" XTABLES_LIBDIR=\"\$(XTABLES_LIBDIR)\" IPTABLES_VERSION_CODE=\"\$(IPTABLES_VERSION_CODE)\"
 
 install::
