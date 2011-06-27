@@ -181,9 +181,11 @@ WriteMakefile(
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/IPTables/libiptc.pm', # retrieve abstract from module
        AUTHOR         => 'Jesper Dangaard Brouer <hawk@comx.dk>') : ()),
-    LIBS              => ['-ldl -lnsl'], # e.g., '-lm'
-#   LIBS              => ['-Llibrary_iptc/ -liptc -ldl -lnsl'], # e.g., '-lm'
-    LDDLFLAGS         => '-shared $(LOCAL_LIB_IPTC) -L$(PREFIX)/lib',
+##  LIBS              => ['-ldl -lnsl -liptc'], # e.g., '-lm'
+    LIBS              => ['-ldl -lnsl -liptc -lxtables'], # e.g., '-lm'
+##  LIBS              => ['-ldl -lnsl'], # e.g., '-lm'
+    LDDLFLAGS         => '-shared -L$(PREFIX)/lib',
+##  LDDLFLAGS         => '-shared $(LOCAL_LIB_IPTC) -L$(PREFIX)/lib',
     LDFLAGS           => '-L$(PREFIX)/lib',
     DEFINE            => '-g -DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DXTABLES_LIBDIR=\"\$(XTABLES_LIBDIR)\" -DIPTABLES_VERSION_CODE=\$(IPTABLES_VERSION_CODE)',
                          # e.g., '-DHAVE_SOMETHING'
@@ -191,7 +193,8 @@ WriteMakefile(
                          # e.g., '-I. -I/usr/include/other'
     # Un-comment this if you add C files to link with later:
     # OBJECT            => '$(O_FILES)', # link all the C files too
-    OBJECT            => '$(O_FILES) iptables/iptables.o iptables/xtables.o library_iptc/libiptc.a',
+    OBJECT            => '$(O_FILES) iptables/iptables.o',
+##  OBJECT            => '$(O_FILES) iptables/iptables.o iptables/xtables.o library_iptc/libiptc.a',
                       # link all the C files too
     PREFIX            => '/usr/local',
     TYPEMAPS          => ['libiptc.typemap'],
