@@ -44,10 +44,11 @@ LDFLAGS+=-rdynamic
 #LD_LOCAL_IPTC:=-L../library_iptc/
 #
 # Need to link directly with object library
-LOCAL_IPTC_OBJ:=../library_iptc/libiptc.a
+# (Update: don't use libiptc.a anymore)
+###LOCAL_IPTC_OBJ:=../library_iptc/libiptc.a
 
 #LDLIBS=-liptc -ldl -lnsl
-LDLIBS=-ldl -lnsl
+LDLIBS=-ldl -lnsl -liptc -lxtables
 
 COPT_FLAGS:=-O2
 CFLAGS:=$(COPT_FLAGS) -Wall -Wunused -I$(KERNEL_DIR)/include -I$(INCDIR) -I../include/ -fPIC -DXTABLES_INTERNAL -g
@@ -64,21 +65,16 @@ iptables.o: iptables.c Makefile
 xtables.o: xtables.c Makefile
 	$(CC) $(CFLAGS) $(DEFINES) -c -o $@ $<
 
-iptables-standalone: iptables-standalone.c iptables.o xtables.o
-	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LOCAL_IPTC_OBJ) $(LDLIBS)
+iptables-standalone: iptables-standalone.c iptables.o
+	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
-# Try to load the shared dyn libiptc.so
-iptables-dyn: iptables-standalone.c iptables.o xtables.o
-	echo Dyn1: $@ $^
-	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS) -liptc
+iptables-blocking: iptables-blocking.c iptables.o
+	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
-# Try to load the shared dyn libiptc.so
-iptables-dyn2: iptables-standalone.c iptables.o
-	echo  Dyn2: $@ $^
-	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS) -liptc -lxtables
-
-iptables-blocking: iptables-blocking.c iptables.o xtables.o
-	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LOCAL_IPTC_OBJ) $(LDLIBS)
+# Try to make static version
+iptables-static: iptables-standalone.c iptables.o xtables.o
+	echo  Static-ver: $@ $^
+	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ ../library_iptc/libiptc.a -ldl -lnsl
 
 install:
 	install -m 0755 -d $(DESTDIR)/$(SBINDIR)
