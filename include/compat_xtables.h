@@ -30,9 +30,9 @@ int compat_xtables_check_inverse(const char option[], int *invert,
 				 int *my_optind, int argc, char **argv)
 {
 #if XTABLES_VERSION_CODE >= 4
-	xtables_check_inverse(option, invert, my_optind, argc, argv);
+	return xtables_check_inverse(option, invert, my_optind, argc, argv);
 #else
-	xtables_check_inverse(option, invert, my_optind, argc);
+	return xtables_check_inverse(option, invert, my_optind, argc);
 #endif
 }
 
