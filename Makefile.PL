@@ -145,10 +145,68 @@ use ExtUtils::MakeMaker;
 	    return ($ver, $vercode, $xtables_libdir);
 	}
 
+	sub check_header($$) {
+	    # Check that a C header file can be included, e.g. xtables.h
+	    my $header_file    = shift;
+	    my $xtables_libdir = shift;
+
+	    print "Checking for header files\n";
+
+	    # Find the include path, based on the detected $xtables_libdir
+	    my $inc_path = dirname($xtables_libdir); # remove "xtables"
+	    $inc_path    = dirname($inc_path);       # remove "libexec" or "lib"
+
+	    if ($inc_path =~ m/^\/$/ ) {
+		# Only contains "/" means this was /lib/xtables
+		# and it has a special load path
+		$inc_path = "/usr/include";
+	    } else {
+		$inc_path .= "/include";
+	    }
+	    print " - detected include path: \"$inc_path\"\n";
+
+	    my $cmd = "./check-header";
+	    my $exitcode;
+
+	    # Call shell-script which calls GCC to perform a compile test
+	    print " - check-header: $header_file\n";
+	    my $output = `$cmd $header_file "-I${inc_path}" 2>&1`;
+	    #print "OUTPUT: $output\n";
+	    if ($? == -1) {
+		# Cannot execute the command
+		print(" WARN: Cannot execute the command:$cmd (err:$!)\n");
+		$exitcode=-1;
+	    } else {
+		# The exit code is in the high byte of the 16-bit status word
+		$exitcode = $? >> 8;
+	    }
+
+	    if ($exitcode > 0) {
+		print "\n";
+		print "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n";
+		print "-=-=-=-        *** ERROR: Missing header file ***       -=-=-=-\n";
+		print "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n";
+		print "\n";
+		print "   Cannot find required header file: \"$header_file\"\n";
+		print "\n";
+		print "   You must install the systems software package \n";
+		print "   containing the header file, usually a \"dev\" package.\n";
+		print "\n";
+		print "   Hint, under Debian/Ubuntu install \"iptables-dev\" package\n";
+		print "     apt-get install iptables-dev\n";
+		print "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n";
+	    }
+
+	    return $exitcode;
+	}
+
+
 	sub post_initialize {
 	    my $default_version = "1.4.4";
 	    my ($ver, $vercode, $xtables_libdir) = detect_iptables_version($default_version);
 	    #print "vercode: $vercode\n";
+	    # Check that the xtables.h header is available on the system
+	    check_header("xtables.h", $xtables_libdir);
 "
 IPTABLES_VERSION:=$ver
 IPTABLES_VERSION_CODE:=$vercode
@@ -185,7 +243,9 @@ clean::
 WriteMakefile(
     NAME              => 'IPTables::libiptc',
     VERSION_FROM      => 'lib/IPTables/libiptc.pm', # finds $VERSION
-    PREREQ_PM         => {}, # e.g., Module::Name => 1.1
+    PREREQ_PM         => {
+	'File::Basename'   => 0,
+    }, # e.g., Module::Name => 1.1
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/IPTables/libiptc.pm', # retrieve abstract from module
        AUTHOR         => 'Jesper Dangaard Brouer <hawk@comx.dk>') : ()),

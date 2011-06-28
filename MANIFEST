@@ -6,6 +6,8 @@ MANIFEST
 ppport.h
 README
 
+check-header
+
 include/libiptc/libiptc.h
 include/libiptc/libip6tc.h
 include/libiptc/ipt_kernel_headers.h
