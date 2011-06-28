@@ -55,7 +55,7 @@ default: all
 
 all: iptables.o iptables-standalone iptables-blocking xshared.o
 
-iptables.o: iptables.c Makefile
+iptables.o: iptables-detect-version.c Makefile
 	$(CC) $(CFLAGS) $(DEFINES) -c -o $@ $<
 
 xshared.o: xshared.c
