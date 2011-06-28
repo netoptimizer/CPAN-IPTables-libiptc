@@ -13,7 +13,7 @@
 
 /* ABI change: for xtables_check_inverse()
 
- * iptables  :  v1.4.4 -> 1.4.5
+ * iptables  :  v1.4.5 -> 1.4.6
  * xtables.so:  3 -> 4
  * commit    :  bf97128c  (libxtables: hand argv to xtables_check_inverse)
 
