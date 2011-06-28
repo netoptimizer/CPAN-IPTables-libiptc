@@ -39,8 +39,12 @@ LDFLAGS = -L$(LIBDIR)
 endif
 LDFLAGS+=-rdynamic
 
-#LDLIBS=-liptc -ldl -lnsl
-LDLIBS=-ldl -lnsl -liptc -lxtables
+# When generating the perl Makefile.PL, the system will detect if libip4tc
+# is available, this variable parsed along from the ../Makefile call
+ifndef EXTRALIBS
+EXTRALIBS := -lnsl -liptc -lip4tc -lxtables
+endif
+LDLIBS=-ldl $(EXTRALIBS)
 
 COPT_FLAGS:=-O2
 CFLAGS:=$(COPT_FLAGS) -Wall -Wunused -I$(KERNEL_DIR)/include -I$(INCDIR) -I../include/ -fPIC -DXTABLES_INTERNAL -g

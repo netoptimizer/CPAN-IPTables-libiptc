@@ -166,7 +166,8 @@ LOCAL_LIB_IPTC:=-Llibrary_iptc/
 
 #iptables/iptables.o iptables/xtables.o: iptables/*.c library_iptc/libiptc.a
 iptables/iptables.o iptables/xshared.o: iptables/*.c
-	make -C iptables/ all PREFIX=\"\$(PREFIX)\" IPTABLES_VERSION=\"\$(IPTABLES_VERSION)\" XTABLES_LIBDIR=\"\$(XTABLES_LIBDIR)\" IPTABLES_VERSION_CODE=\"\$(IPTABLES_VERSION_CODE)\"
+	make -C iptables/ all PREFIX=\"\$(PREFIX)\" IPTABLES_VERSION=\"\$(IPTABLES_VERSION)\" XTABLES_LIBDIR=\"\$(XTABLES_LIBDIR)\" IPTABLES_VERSION_CODE=\"\$(IPTABLES_VERSION_CODE)\" EXTRALIBS=\"\$(EXTRALIBS)\"
+
 
 install::
 	make -C iptables/ install
@@ -189,7 +190,8 @@ WriteMakefile(
       (ABSTRACT_FROM  => 'lib/IPTables/libiptc.pm', # retrieve abstract from module
        AUTHOR         => 'Jesper Dangaard Brouer <hawk@comx.dk>') : ()),
 ##  LIBS              => ['-ldl -lnsl -liptc'], # e.g., '-lm'
-    LIBS              => ['-ldl -lnsl -liptc -lxtables'], # e.g., '-lm'
+    # Notice, perl Makefile.PL will detect if ip4tc is available
+    LIBS              => ['-ldl -lnsl -liptc -lip4tc -lxtables'], # e.g., '-lm'
 ##  LIBS              => ['-ldl -lnsl'], # e.g., '-lm'
     LDDLFLAGS         => '-shared -L$(PREFIX)/lib',
 ##  LDDLFLAGS         => '-shared $(LOCAL_LIB_IPTC) -L$(PREFIX)/lib',
