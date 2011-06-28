@@ -2,11 +2,19 @@ Revision history for Perl extension IPTables::libiptc.
 
 Recent changes
 
-	- Working on support for iptables v.1.4.4
+	- Support for iptables v1.4.3 until v1.4.8.
 
-	- Working on using dynamic shared libs libiptc.so and
-          libxtables.so, available on target system, instead of
-          maintaining this code locally.
+	- This is a significant change release, in-order to adapt to
+          iptables ABI/API changes in release 1.4.3, which introduced
+          dynamic shared libs.
+
+	- Using the dynamic shared libs libiptc.so and libxtables.so,
+          available on target system, instead of maintaining this code
+          locally.
+
+	- This version requires that the system provides a correct
+          "xtables.h" header file, which corrosponds to the systems
+          libxtables.so shared library.
 
 0.18	Mon Oct 26 14:23:51 CET 2009
 
