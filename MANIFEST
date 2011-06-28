@@ -13,17 +13,22 @@ include/libiptc/libip6tc.h
 include/libiptc/ipt_kernel_headers.h
 include/libiptc/libxtc.h
 
-iptables/iptables.c
 iptables/iptables-standalone.c
 iptables/iptables-blocking.c
 iptables/iptables-multi.h
+iptables/iptables.c-v1.4.4
+iptables/iptables.c-v1.4.5
+iptables/iptables.c-v1.4.8
+iptables/iptables.c-v1.4.10
+iptables/iptables.c-v1.4.11.1
+iptables/iptables-detect-version.c
+iptables/detect-version.notes
 iptables/xshared.h
 iptables/xshared.c
 iptables/Makefile
 include/iptables.h
 include/iptables/internal.h
 include/iptables_common.h
-include/compat_xtables.h
 
 library_iptc/libip4tc.c
 library_iptc/libip6tc.c
