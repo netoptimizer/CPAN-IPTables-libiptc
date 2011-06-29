@@ -3,7 +3,8 @@
 
 CC=gcc
 TMPFILE=tmp_$$.c
-trap 'rm -f $TMPFILE' EXIT
+TMPO=tmp_$$.o
+trap 'rm -f $TMPFILE $TMPO' EXIT
 
 if [ -z "$1" ]; then
     echo "ERROR: $0 -- Please specifiy the header file to include"
@@ -17,7 +18,7 @@ else
     echo "WARN: $0 -- Please specifiy the CFLAGS to use"
 fi
 
-cat <<EOF >$TMPFILE && $CC $CFLAGS $TMPFILE
+cat <<EOF >$TMPFILE && $CC -o $TMPO $CFLAGS $TMPFILE
 #include "$INCLUDE"
 int main() { return 0; }
 EOF
