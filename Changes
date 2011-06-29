@@ -2,6 +2,8 @@ Revision history for Perl extension IPTables::libiptc.
 
 Recent changes
 
+0.51    Wed Jun 29 11:37:42 EDT 2011
+
 	- Support for iptables v1.4.3 until v1.4.10.
 
 	- This is a significant change release, in-order to adapt to
