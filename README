@@ -28,14 +28,18 @@ DEPENDENCIES
 This module requires these other modules and libraries:
 
  iptables
- libiptc.a
+ xtables.h
+ libiptc.so
+ libxtables.so
 
 The iptables version installed on your system is auto-detected during
 generation of the Makefile.PL file.  This sets the IPTABLES_VERSION
 variable as it needs to match the .so extentions available on you
 system.
 
-This release focus on supporting iptables above version 1.4.3.2.
+This release focus on supporting iptables above version 1.4.3.2
+and upto iptables version 1.4.10.
+
 The default fallback IPTABLES_VERSION is currently set to version 1.4.4.
 
 If you need support for iptables versions 1.4.1 and 1.4.2, we
