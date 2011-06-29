@@ -42,6 +42,7 @@
  *  (suspect this version will not compile due changes in iptables.h)
  */
 #elif XTABLES_VERSION_CODE == 6
+#warning "This version of xtables is currently not supported by this Perl package"
 #include "iptables.c-v1.4.11.1"
 
 #elif XTABLES_VERSION_CODE > 6
