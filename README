@@ -9,18 +9,21 @@ fast. Several rule changes is committed atomically.
 
 This module is heavily inspired by the CPAN module IPTables-IPv4.  The
 CPAN module IPTables-IPv4 could not be used because it has not been
-kept up-to-date, with the newest iptables extentions.  This is a
+kept up-to-date, with the newest iptables extensions.  This is a
 result of the module design, as it contains every extension and thus
 needs to port them individually.
 
-This package has another approach, it links with the systems libiptc.a
-library and depend on dynamic loading of iptables extensions available
-on the system.
+This package has another approach, it links with the systems
+libiptc.so and libxtables.so library and depend on dynamic loading of
+iptables extensions available on the system.
 
 This design limits us to only export the libiptc chain manipulation
 functions.  All rule manipulations are done through the iptables.c
-"do_command" function. (As iptables.c is not made as a library, the
-package unfortunately needs to maintain/contain this C file).
+"do_command" function.  As iptables.c is not made as a library, the
+package unfortunately needs to maintain/contain this C file. This
+unfortunately also means that we need to keep up-to-date with
+iptables.c API changes (but significantly less work that keeping in
+sync with every extension module).
 
 
 DEPENDENCIES
@@ -38,7 +41,7 @@ variable as it needs to match the .so extentions available on you
 system.
 
 This release focus on supporting iptables above version 1.4.3.2
-and upto iptables version 1.4.10.
+and up-to iptables version 1.4.10.
 
 The default fallback IPTABLES_VERSION is currently set to version 1.4.4.
 
