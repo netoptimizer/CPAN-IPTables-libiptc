@@ -1,10 +1,12 @@
-#ifndef IPTABLES_XSHARED_H
-#define IPTABLES_XSHARED_H 1
+#include <xtables.h>
 
-struct xtables_rule_match;
-struct xtables_target;
+#if   XTABLES_VERSION_CODE < 7
+#include "xshared.h-old"
 
-extern void print_extension_helps(const struct xtables_target *,
-	const struct xtables_rule_match *);
+#elif XTABLES_VERSION_CODE == 7
+#include "xshared.h-v1.4.12"
 
-#endif /* IPTABLES_XSHARED_H */
+#else
+#error "The libxtables is newer than this package support and know of - Sorry!"
+#error " Please inform the package author of this issue, thanks! "
+#endif

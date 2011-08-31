@@ -37,31 +37,20 @@
 #include <string.h>
 #include <iptables.h>
 #include "iptables-multi.h"
-#include <xtables.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/file.h>
-
-#define LOCK_FILE "/var/lock/iptables_cmd_lock"
 
 #ifdef IPTABLES_MULTI
 int
-iptables_blocking(int argc, char *argv[])
+iptables_main(int argc, char *argv[])
 #else
 int
 main(int argc, char *argv[])
 #endif
 {
-        int fd;
 	int ret;
 	char *table = "filter";
 	struct iptc_handle *handle = NULL;
 
 	iptables_globals.program_name = "iptables";
-	//iptables_globals.program_version = XTABLES_VERSION;
-
 	ret = xtables_init_all(&iptables_globals, NFPROTO_IPV4);
 	if (ret < 0) {
 		fprintf(stderr, "%s/%s Failed to initialize xtables\n",
@@ -73,35 +62,24 @@ main(int argc, char *argv[])
 	init_extensions();
 #endif
 
-	fd = open(LOCK_FILE, O_CREAT|O_WRONLY|O_TRUNC, S_IRWXU|S_IRGRP);
-	if (fd < 0) {
-		fprintf(stderr, "iptables: Cannot open lock file %s (strerr:%s)\n",
-			LOCK_FILE, strerror(errno));
-		exit(errno);
-	}
-	flock(fd, LOCK_EX);
-
-#if XTABLES_VERSION_CODE >= 7
-#define do_command do_command4
-#endif
 	ret = do_command(argc, argv, &table, &handle);
 	if (ret) {
 		ret = iptc_commit(handle);
-		if (errno == EAGAIN) {
-			fprintf(stderr, "iptc_commit: %s\n", strerror(errno));
-			exit(RESOURCE_PROBLEM);
-		}
 		iptc_free(handle);
 	}
 
-	flock(fd, LOCK_UN);
-
-
 	if (!ret) {
-		fprintf(stderr, "fall-through(errno:%d) iptables: %s\n",
-			errno, iptc_strerror(errno));
-		/* Test: Try to get the errno... */
-		/* exit(errno); */
+		if (errno == EINVAL) {
+			fprintf(stderr, "iptables: %s. "
+					"Run `dmesg' for more information.\n",
+				iptc_strerror(errno));
+		} else {
+			fprintf(stderr, "iptables: %s.\n",
+				iptc_strerror(errno));
+		}
+		if (errno == EAGAIN) {
+			exit(RESOURCE_PROBLEM);
+		}
 	}
 
 	exit(!ret);

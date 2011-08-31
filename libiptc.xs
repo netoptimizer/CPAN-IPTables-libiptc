@@ -437,6 +437,9 @@ iptables_delete_chain(self, chain)
   CODE:
     if (self == NULL) croak(ERRSTR_NULL_HANDLE);
     else {
+#if XTABLES_VERSION_CODE >= 7
+#define delete_chain delete_chain4
+#endif
 	RETVAL = delete_chain(chain, 0, self);
 	if (!RETVAL) {
 	    SET_ERRNUM(errno);
@@ -514,6 +517,9 @@ iptables_do_command(self, array_ref)
 	 * actually is a bug), thus we need to assign something valid
 	 * to fake_table, to avoid a segfault.
 	 */
+#if XTABLES_VERSION_CODE >= 7
+#define do_command do_command4
+#endif
 	RETVAL = do_command(argc, argv, &fake_table, &self);
 	if (!RETVAL) {
 	    SET_ERRNUM(errno);
