@@ -254,7 +254,7 @@ None by default.
 =head1 SEE ALSO
 
 Module source also available here:
- http://people.netfilter.org/hawk/perl_modules/
+ https://github.com/netoptimizer/CPAN-IPTables-libiptc/
 
 The Netfilter/iptables homepage: http://www.netfilter.org
 
@@ -273,7 +273,7 @@ Jesper Dangaard Brouer, E<lt>hawk@diku.dkE<gt> or E<lt>hawk@people.netfilter.org
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2006-2009 by Jesper Dangaard Brouer
+Copyright (C) 2006-2011 by Jesper Dangaard Brouer
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
