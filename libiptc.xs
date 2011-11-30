@@ -96,9 +96,13 @@ commit(self)
 	    SET_ERRSTR("%s", iptc_strerror(errno));
 	    SvIOK_on(ERROR_SV);
 	}
-	// FIXME: Think its allowed to do several commits in newer
-	// versions of iptables, thus we should not set self=NULL
-//	self = NULL;
+        /* Newer versions of iptables does not call iptc_free(), after
+           iptc_commit().  This is done to support several commits,
+           but we choose not to support this feature.  Thus, we need
+           to free memory here (used by the iptables ruleset, actually
+           the cached libiptc blob version).
+        */
+	iptc_free(self);
 	# TODO: UnLock /var/lock/iptables_tablename
     }
   OUTPUT:
