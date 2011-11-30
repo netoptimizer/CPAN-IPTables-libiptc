@@ -1,4 +1,4 @@
-IPTables-libiptc version 0.51
+IPTables-libiptc version 0.52
 =============================
 
 This package provides a Perl interface to the netfilter/iptables
@@ -70,10 +70,10 @@ To install this module type the following:
    perl Makefile.PL PREFIX=/usr/local/
    make XTABLES_LIBDIR=/usr/local/libexec/xtables
    sudo make test
-   make install PREFIX=/usr/local/stow/IPTables-libiptc-0.51
+   make install PREFIX=/usr/local/stow/IPTables-libiptc-0.52
 
    cd /usr/local/stow/
-   stow IPTables-libiptc-0.51
+   stow IPTables-libiptc-0.52
 
 
 COPYRIGHT AND LICENCE

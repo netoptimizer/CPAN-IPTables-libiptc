@@ -2,6 +2,19 @@ Revision history for Perl extension IPTables::libiptc.
 
 Recent changes
 
+0.52    Wed Nov 30 11:21:52 CET 2011
+
+	- This is a bugfix release, fixing memory leaks.
+
+	- This release is only relevant for people using this module
+	  under a daemon or other long lived programs.
+
+	- Newer version of iptables/libiptc support doing several
+	  commits on the same handle.  This module, chooses to not to
+	  use this option, and instead release/free the handle after a
+	  commit.
+
+
 0.51    Wed Jun 29 11:37:42 EDT 2011
 
 	- Support for iptables v1.4.3 until v1.4.10.
