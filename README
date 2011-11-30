@@ -55,6 +55,13 @@ Significant API changes when into 1.4.3, and thus older versions cannot
 be kept backward binary compatible with this release.
 
 
+CODE
+
+The source code is available on github:
+
+  https://github.com/netoptimizer/CPAN-IPTables-libiptc/
+
+
 INSTALLATION
 
 Notice this module depends on iptables dynamic loadable libraries,
