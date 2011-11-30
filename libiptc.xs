@@ -77,8 +77,6 @@ init(tablename)
 	SET_ERRSTR("%s", iptc_strerror(errno));
 	SvIOK_on(ERROR_SV);
     } else {
-	RETVAL  = malloc(sizeof(struct iptc_handle*));
-	//OLD: RETVAL  = malloc(sizeof(iptc_handle_t));
 	RETVAL = handle;
 	# TODO: Lock /var/lock/iptables_tablename
     }
@@ -109,11 +107,10 @@ commit(self)
 
 void
 DESTROY(self)
-    IPTables::libiptc &self
+    IPTables::libiptc self
   CODE:
     if(self) {
 	//This breaks: if(&self) iptc_free(self);
-	free(self);
     }
     # TODO: UnLock /var/lock/iptables_tablename
 
