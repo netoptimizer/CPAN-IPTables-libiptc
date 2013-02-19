@@ -53,7 +53,8 @@ CFLAGS:=$(COPT_FLAGS) -Wall -Wunused -I$(KERNEL_DIR)/include -I$(INCDIR) -I../in
 DEFINES:=-DIPTABLES_VERSION=\"$(IPTABLES_VERSION)\" -DXTABLES_LIBDIR=\"$(XTABLES_LIBDIR)\" -DIPTABLES_VERSION_CODE=\$(IPTABLES_VERSION_CODE)
 default: all
 
-all: iptables.o iptables-standalone iptables-blocking xshared.o
+#all: iptables.o iptables-standalone iptables-blocking xshared.o
+all: iptables.o xshared.o
 
 iptables.o: iptables-detect-version.c Makefile
 	$(CC) $(CFLAGS) $(DEFINES) -c -o $@ $<
@@ -61,11 +62,11 @@ iptables.o: iptables-detect-version.c Makefile
 xshared.o: xshared.c
 	$(CC) $(CFLAGS) $(DEFINES) -c -o $@ $<
 
-iptables-standalone: iptables-standalone.c iptables.o xshared.o
-	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS)
-
-iptables-blocking: iptables-blocking.c iptables.o xshared.o
-	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+#iptables-standalone: iptables-standalone.c iptables.o xshared.o
+#	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+#
+#iptables-blocking: iptables-blocking.c iptables.o xshared.o
+#	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
 
 ## Try to make static version
@@ -73,9 +74,10 @@ iptables-blocking: iptables-blocking.c iptables.o xshared.o
 #	echo  Static-ver: $@ $^
 #	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ ../library_iptc/libiptc.a -ldl -lnsl
 
-install:
-	install -m 0755 -d $(DESTDIR)/$(SBINDIR)
-	install -m 0755 iptables-blocking $(DESTDIR)/$(SBINDIR)
+#install:
+#	install -m 0755 -d $(DESTDIR)/$(SBINDIR)
+#	install -m 0755 iptables-blocking $(DESTDIR)/$(SBINDIR)
 
 clean:
-	rm iptables-standalone iptables-blocking *.o
+#	rm iptables-standalone iptables-blocking
+	rm *.o
