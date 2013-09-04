@@ -9,6 +9,9 @@
 #elif XTABLES_VERSION_CODE == 9
 #include "iptables-standalone.c-v1.4.16.2"
 
+#elif XTABLES_VERSION_CODE == 10
+#include "iptables-standalone.c-v1.4.18"
+
 #else
 #error "The libxtables is newer than this package support and know of - Sorry!"
 #error " Please inform the package author of this issue, thanks! "
