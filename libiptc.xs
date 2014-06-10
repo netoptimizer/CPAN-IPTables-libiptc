@@ -313,7 +313,7 @@ list_rules_IPs(self, type, chain)
 	    /* Parse what type was requested */
 	    if      (strcasecmp(type, "dst") == 0) the_type = 'd';
 	    else if (strcasecmp(type, "src") == 0) the_type = 's';
-	    else croak(errmsg);
+	    else croak("%s", errmsg);
 
 	    while(entry) {
 		count++;
@@ -331,7 +331,7 @@ list_rules_IPs(self, type, chain)
 			sv = newSVpv(buf, 0);
 		        break;
 		    default:
-		        croak(errmsg);
+		        croak("%s", errmsg);
 		    }
 		    XPUSHs(sv_2mortal(sv));
 		}
