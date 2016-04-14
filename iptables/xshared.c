@@ -12,6 +12,9 @@
 #elif XTABLES_VERSION_CODE == 10
 #include "xshared.c-v1.4.18"
 
+#elif XTABLES_VERSION_CODE == 11
+#include "xshared.c-v1.6.0"
+
 #else
 #error "The libxtables is newer than this package support and know of - Sorry!"
 #error " Please inform the package author of this issue, thanks! "
