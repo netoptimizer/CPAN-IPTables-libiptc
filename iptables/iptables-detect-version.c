@@ -61,7 +61,11 @@
 #warning "This version of xtables is currently not supported by this Perl package"
 #include "iptables.c-v1.6.0"
 
-#elif XTABLES_VERSION_CODE > 11
+#elif XTABLES_VERSION_CODE == 12
+#warning "This version of xtables is currently not supported by this Perl package"
+#include "iptables.c-v1.6.1"
+
+#elif XTABLES_VERSION_CODE > 12
 #error "The libxtables is newer than this package support and know of - Sorry!"
 #error " Please inform the package author of this issue, thanks! "
 
