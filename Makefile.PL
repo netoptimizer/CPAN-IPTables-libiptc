@@ -249,10 +249,10 @@ WriteMakefile(
     ($] >= 5.005 ?     ## Add these new keywords supported since 5.005
       (ABSTRACT_FROM  => 'lib/IPTables/libiptc.pm', # retrieve abstract from module
        AUTHOR         => 'Jesper Dangaard Brouer <hawk@comx.dk>') : ()),
-##  LIBS              => ['-ldl -lnsl -liptc'], # e.g., '-lm'
+##  LIBS              => ['-ldl -liptc'], # e.g., '-lm'
     # Notice, perl Makefile.PL will detect if ip4tc is available
-    LIBS              => ['-ldl -lnsl -liptc -lip4tc -lxtables'], # e.g., '-lm'
-##  LIBS              => ['-ldl -lnsl'], # e.g., '-lm'
+    LIBS              => ['-ldl -liptc -lip4tc -lxtables'], # e.g., '-lm'
+##  LIBS              => ['-ldl ], # e.g., '-lm'
     LDDLFLAGS         => '-shared -L$(PREFIX)/lib',
 ##  LDDLFLAGS         => '-shared $(LOCAL_LIB_IPTC) -L$(PREFIX)/lib',
     LDFLAGS           => '-L$(PREFIX)/lib',
