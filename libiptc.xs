@@ -517,10 +517,13 @@ iptables_do_command(self, array_ref)
 	 * actually is a bug), thus we need to assign something valid
 	 * to fake_table, to avoid a segfault.
 	 */
-#if XTABLES_VERSION_CODE >= 7
-#define do_command do_command4
-#endif
+#if XTABLES_VERSION_CODE >= 11
+	RETVAL = do_command4(argc, argv, &fake_table, &self, true);
+#elif XTABLES_VERSION_CODE >= 7
+	RETVAL = do_command4(argc, argv, &fake_table, &self);
+#else
 	RETVAL = do_command(argc, argv, &fake_table, &self);
+#endif
 	if (!RETVAL) {
 	    SET_ERRNUM(errno);
 	    SET_ERRSTR("%s", iptc_strerror(errno));
