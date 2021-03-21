@@ -41,7 +41,7 @@ variable as it needs to match the .so extentions available on you
 system.
 
 This release focus on supporting iptables above version 1.4.3.2
-and up-to iptables version 1.4.10.
+and up-to iptables version 1.4.18.
 
 The default fallback IPTABLES_VERSION is currently set to version 1.4.4.
 
