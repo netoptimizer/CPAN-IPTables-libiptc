@@ -111,8 +111,8 @@ use ExtUtils::MakeMaker;
 			$ver = $default_version;
 		    }
 
-		    if ($minor > 4) {
-			print "Module only supports version 1.4.x, fallback\n";
+		    if ($minor > 6) {
+			print "Module only supports version 1.6.x, fallback\n";
 			$ver = $default_version
 		    }
 
