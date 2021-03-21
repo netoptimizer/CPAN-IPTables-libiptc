@@ -74,7 +74,7 @@ xshared.o: xshared.c
 #	echo  Static-ver: $@ $^
 #	$(CC) $(CFLAGS) $(DEFINES) $(LDFLAGS) -o $@ $^ ../library_iptc/libiptc.a -ldl -lnsl
 
-#install:
+install:
 #	install -m 0755 -d $(DESTDIR)/$(SBINDIR)
 #	install -m 0755 iptables-blocking $(DESTDIR)/$(SBINDIR)
 
